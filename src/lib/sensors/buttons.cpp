@@ -2,16 +2,15 @@
 
 uint32_t last_time_green_pressed = 0;
 uint32_t last_time_red_pressed = 0;
+bool previous_red = false;
+
 void checkbuttons(){
     // if button pressed
     if (digitalRead(GREEN_BUTTON) == 0){
         if (millis() - last_time_green_pressed < 1000){
             return;
         }
-        //Serial.println("pressed");
-            // clear dtc
-        //digitalToggle(DEBUG_LED);
-
+        clearDTC();
         last_time_green_pressed = millis();
     }
 
@@ -19,10 +18,19 @@ void checkbuttons(){
         if (millis() - last_time_red_pressed < 1000){
             return;
         }
-        //Serial.println("pressed");
-            // clear dtc
-        //digitalToggle(DEBUG_LED);
-        // change screen and lookup dtc
+        if (!previous_red){
+
+            //readDTC();
+            
+
+            //digitalWrite(DEBUG_LED, HIGH);
+            setDebugScreen();
+            previous_red = true;
+        } else {
+            //digitalWrite(DEBUG_LED, LOW);
+            setMainScreen();
+            previous_red = false;
+        }
 
         last_time_red_pressed = millis();
     }
