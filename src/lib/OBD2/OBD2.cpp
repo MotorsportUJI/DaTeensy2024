@@ -312,3 +312,8 @@ String OBD2toCSV(OBD2sensordata database){
 boolean isContact(){
     return contact;
 }
+
+void clearDTC(){
+
+    return;
+}

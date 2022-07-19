@@ -76,6 +76,9 @@ String OBD2toCSV(OBD2sensordata database);
 
 boolean isContact();
 
+// ask
+void clearDTC();
+
 
 // conversions
 uint16_t OBD2RPM(OBD2sensordata db);
