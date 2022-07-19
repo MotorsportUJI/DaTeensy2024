@@ -11,6 +11,7 @@ void initScreen(HardwareSerial &_serial);
 void sendGear(int str);
 void sendRPM(int str);
 void sendCOLTMP(float str);
+void sendAIRTMP(float str);
 
 void sendTPS(float str);
 void sendTrim1(float str);

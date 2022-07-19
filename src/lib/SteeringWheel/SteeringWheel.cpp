@@ -117,7 +117,14 @@ void sendRPM(int str) {
 
 void sendCOLTMP(float str) {
     
-    ser->printf("watertemp.txt=\"%1f\"",str);
+    ser->printf("watertemp.txt=\"%.2f\"",str);
+    endMessage();
+
+}
+
+void sendAIRTMP(float str) {
+    
+    ser->printf("airtemp.txt=\"%.2f\"",str);
     endMessage();
 
 }
@@ -132,13 +139,13 @@ void sendTPS(float str){
 }
 
 void sendTrim1(float str){
-    ser->printf("minifold1.txt=\"%3f\"",str);
+    ser->printf("minifold1.txt=\"%.3f\"",str);
     endMessage();
 
 }
 
 void sendTrim2(float str){
-    ser->printf("minifold2.txt=\"%3f\"",str);
+    ser->printf("minifold2.txt=\"%.3f\"",str);
     endMessage();
 }
 
