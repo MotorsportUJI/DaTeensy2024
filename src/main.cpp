@@ -67,6 +67,7 @@ void loop() {
     // update screen
     sendRPM(OBD2RPM(OBD2db));
     sendCOLTMP(OBD2TMP(OBD2db.Engine_coolant_temperature));
+    sendAIRTMP(OBD2TMP(OBD2db.intake_air_temperature));
     sendTPS(OBD2PC(OBD2db.relavite_throttle_position));
     //sendTrim1(OBD2Trim(OBD2db.long_term_fuel_trim));
     //sendTrim2(OBD2Trim(OBD2db.oxygen_sensor_long_term_fuel_trim));
