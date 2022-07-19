@@ -21,7 +21,8 @@ void sendDTCcount(int str);
 void sendPressure1(int str);
 void sendPressure2(int str);
 
-void enable();
-void disable();
+void setMainScreen();
+void setSplashScreen();
+void setDebugScreen();
 
 #endif

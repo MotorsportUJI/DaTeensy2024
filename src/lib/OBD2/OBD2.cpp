@@ -43,6 +43,19 @@ void askPID(uint8_t id){
 
 }
 
+void clearDTC(){
+    CAN_message_t askPID;
+    askPID.id = 0x7DF;
+
+    askPID.buf[0] = 0x01; // message length
+    askPID.buf[1] = 0x04; // service 0x04 (clear dtc)
+
+    askPID.len = 8;
+    myCan.write(askPID);
+}
+
+
+
 void receivedOBD2callback(const CAN_message_t &msg){
     #ifdef DEBUG
  //   Serial.println("Callback reached: ");
@@ -134,11 +147,25 @@ void receivedOBD2callback(const CAN_message_t &msg){
         }
     }
 
+    
+
 
     askPID(idList[idIndex]);
     idIndex = (idIndex + 1) % sizeof(idList);
     time_received = millis();
 }
+
+void readDTC(){
+    CAN_message_t askPID;
+    askPID.id = 0x7DF;
+
+    askPID.buf[0] = 0x01; // message length
+    askPID.buf[1] = 0x03; // service 0x03 (read dtc)
+
+    askPID.len = 8;
+    myCan.write(askPID);
+}
+
 
 void OBD2events(){
     // process can callbacks
@@ -313,7 +340,3 @@ boolean isContact(){
     return contact;
 }
 
-void clearDTC(){
-
-    return;
-}

@@ -55,12 +55,12 @@ void loop() {
     // shutdown screen if contact is off
     if (isContact()){
         if (!previous_contact){
-            enable();
+            setMainScreen();
             previous_contact = true;
         }
     } else{
         if (previous_contact){
-            disable();
+            setSplashScreen();
             previous_contact = false;
         }
     }

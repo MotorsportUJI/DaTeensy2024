@@ -66,6 +66,9 @@ typedef struct {
 // functions
 void initOBD2(OBD2sensordata &database);
 void askPID(uint8_t id);
+// ask
+void clearDTC();
+
 void OBD2events();
 
 void receivedOBD2callback(const CAN_message_t &msg);
@@ -76,8 +79,6 @@ String OBD2toCSV(OBD2sensordata database);
 
 boolean isContact();
 
-// ask
-void clearDTC();
 
 
 // conversions
@@ -85,6 +86,8 @@ uint16_t OBD2RPM(OBD2sensordata db);
 float OBD2TMP(uint8_t tmp);
 float OBD2PC(uint8_t tmp);
 float OBD2Trim(uint8_t tmp);
+
+void readDTC();
 
 
 #endif

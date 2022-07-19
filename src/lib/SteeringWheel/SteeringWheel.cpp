@@ -167,13 +167,18 @@ void sendPressure2(int str){
 }
 
 
-void enable(){
+void setMainScreen(){
     ser->printf("page 1");
     endMessage();
 }
 
-void disable(){
+void setSplashScreen(){
     ser->printf("page 0");
     endMessage();
 
+}
+
+void setDebugScreen(){
+    ser->printf("page 2");
+    endMessage();
 }

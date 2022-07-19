@@ -11,6 +11,8 @@ void checkbuttons(){
             return;
         }
         clearDTC();
+        setMainScreen();
+        previous_red = false;
         last_time_green_pressed = millis();
     }
 
@@ -21,7 +23,7 @@ void checkbuttons(){
         if (!previous_red){
 
             //readDTC();
-            
+
 
             //digitalWrite(DEBUG_LED, HIGH);
             setDebugScreen();
