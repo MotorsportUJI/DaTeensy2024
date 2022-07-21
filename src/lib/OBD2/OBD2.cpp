@@ -5,6 +5,7 @@ uint8_t idIndex = 0;
 uint32_t time_received = 0;
 
 boolean contact = false;
+boolean readdtc_flag = false;
 
 
 FlexCAN_T4<CAN, RX_SIZE_256, TX_SIZE_16> myCan;
@@ -54,7 +55,10 @@ void clearDTC(){
     myCan.write(askPID);
 }
 
-
+uint8_t multiframe_response[32];
+uint8_t multiframe_length;
+uint8_t multiframe_readed_bytes;
+boolean multiframe_processed = true;
 
 void receivedOBD2callback(const CAN_message_t &msg){
     #ifdef DEBUG
@@ -62,11 +66,80 @@ void receivedOBD2callback(const CAN_message_t &msg){
     #endif
     contact = true;
 
-    uint8_t length = msg.buf[0];
-    uint8_t service = msg.buf[1]; // 41: actual data, 43: dtc
-    uint8_t pid = msg.buf[2];
-    uint8_t A = msg.buf[3];
-    uint8_t B = msg.buf[4];
+    // multi frame response
+    if ((msg.buf[0] & 0b11110000) == 0x10){
+        multiframe_length = 0;
+        multiframe_readed_bytes = 0;
+        multiframe_processed = false;
+        multiframe_length = msg.buf[1]; //(in bytes) the second half of the first byte too, but i think that will never need to receive so many bytes
+        for (int i = 2; i < msg.len; i++){
+            multiframe_response[i-2] = msg.buf[i];
+            multiframe_readed_bytes++;
+        }
+
+        // ask for continuation
+        CAN_message_t askCont;
+        askCont.id = 0x7E0;
+
+        askCont.buf[0] = 0x30; // ISO-TP message type 3, ask for continuation
+        askCont.len = 8;
+        myCan.write(askCont);
+        return;
+    }
+
+    // multi frame response continuations
+    if ((msg.buf[0] & 0b11110000) == 0x20){
+        for (int i = 1; i < 7; i++){
+                multiframe_response[multiframe_readed_bytes] = msg.buf[i] -1;
+                multiframe_readed_bytes++;
+                if (multiframe_readed_bytes >= multiframe_length){
+                    break;
+                }
+        }
+        if (multiframe_length != multiframe_readed_bytes){
+            return;
+        }
+    }
+
+    // handle multiframe
+    if (!multiframe_processed){
+            //for(int i = 0; i<multiframe_readed_bytes; i++)
+            //    Serial.printf("%#x ", multiframe_response[i]);
+            //Serial.println();
+            dispatchMessage(multiframe_response, multiframe_length);
+        multiframe_processed = true;
+    }
+
+
+    //if we need to ask for dtc
+    if (readdtc_flag){
+        CAN_message_t askDTC;
+        askDTC.id = 0x7DF;
+
+        askDTC.buf[0] = 0x01; // message length
+        askDTC.buf[1] = 0x03; // service 0x03 (get dtc)
+
+        askDTC.len = 8;
+        myCan.write(askDTC);
+
+        readdtc_flag = false;
+        return;
+    } 
+
+    dispatchMessage((const uint8_t *) &msg.buf[1], msg.len-1); // send without msg length, which is part of the ISO-TP protocol
+
+
+    askPID(idList[idIndex]);
+    idIndex = (idIndex + 1) % sizeof(idList);
+    time_received = millis();
+}
+
+void dispatchMessage(const uint8_t msg[], uint8_t length){
+
+        uint8_t service = msg[0]; // 41: sensor data
+        uint8_t pid = msg[1];
+        uint8_t A = msg[2];
+        uint8_t B = msg[3];
 
     if (service == 0x41){ // we've got a response
         switch(pid){
@@ -146,24 +219,17 @@ void receivedOBD2callback(const CAN_message_t &msg){
                 break;  
         }
     }
-
-    
-
-
-    askPID(idList[idIndex]);
-    idIndex = (idIndex + 1) % sizeof(idList);
-    time_received = millis();
+    if (service == 0x43){
+        Serial.println("handling dtc reading");
+        
+    }
 }
 
+
+
+
 void readDTC(){
-    CAN_message_t askPID;
-    askPID.id = 0x7DF;
-
-    askPID.buf[0] = 0x01; // message length
-    askPID.buf[1] = 0x03; // service 0x03 (read dtc)
-
-    askPID.len = 8;
-    myCan.write(askPID);
+    readdtc_flag = true;
 }
 
 

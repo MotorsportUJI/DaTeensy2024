@@ -22,9 +22,7 @@ void checkbuttons(){
         }
         if (!previous_red){
 
-            //readDTC();
-
-
+            readDTC();
             //digitalWrite(DEBUG_LED, HIGH);
             setDebugScreen();
             previous_red = true;
