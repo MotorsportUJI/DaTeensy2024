@@ -220,8 +220,21 @@ void dispatchMessage(const uint8_t msg[], uint8_t length){
         }
     }
     if (service == 0x43){
-        Serial.println("handling dtc reading");
-        
+        //Serial.println("handling dtc reading");
+        // print to screen
+        uint16_t dtc_list[(length-2)/2];
+        for (int i = 2, ii = 0; i < length; i += 2, ii++){
+            //Serial.print("i=");
+            //Serial.print(i);
+            //Serial.print(" ii=");
+            //Serial.print(ii);
+            dtc_list[ii] = (msg[i] << 8)  + msg[i+1];
+            //Serial.print(" dtc_list[ii]=");
+            //Serial.println(dtc_list[ii]);
+        }
+
+        sendDTCDebugScreen(dtc_list, (length-2)/2);
+
     }
 }
 
