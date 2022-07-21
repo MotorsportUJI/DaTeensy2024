@@ -1,7 +1,3 @@
-
-TODO: GEAR reading / Writting
-TODO: WRITE RPM leds
-
 TODO: read DTC codes
 TODO: button clear DTC
 

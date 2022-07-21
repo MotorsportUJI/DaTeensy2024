@@ -167,13 +167,45 @@ void sendPressure2(int str){
 }
 
 
-void enable(){
+void setMainScreen(){
     ser->printf("page 1");
     endMessage();
 }
 
-void disable(){
+void setSplashScreen(){
     ser->printf("page 0");
     endMessage();
+
+}
+
+void setDebugScreen(){
+    ser->printf("page 2");
+    endMessage();
+}
+
+void sendDebugmsg(int msg, const char* debugstring){
+    //Serial.printf("msg%d.txt=\"%s\"",msg,debugstring);
+    ser->printf("msg%d.txt=\"%s\"",msg,debugstring);
+    endMessage();
+}
+
+void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
+    for(int i = 0; i<length; i++)
+    //Serial.printf("%#x ", msg[i]);
+    //Serial.println();
+    for (int i = 0; i < length; i++){
+        const char* yeah = getDTCstring(msg[i]);
+        if (yeah != NULL){
+            sendDebugmsg(i, yeah);
+        } else{
+        char yeah2[16];
+        sprintf(yeah2, "%x",msg[i]);
+        sendDebugmsg(i, yeah);
+        }
+
+        if (i >= 7){
+            break;
+        }
+    }
 
 }

@@ -8,6 +8,7 @@
 #include "lib/Radio/Radio.h"
 
 #include "lib/sensors/gear.h"
+#include "lib/sensors/buttons.h"
 
 
 
@@ -35,6 +36,8 @@ void setup() {
     rpmled(0);
     OBD2db.engine_rpmA=0;
     OBD2db.engine_rpmB=0;
+
+    pinMode(DEBUG_LED, OUTPUT);
 }
 
 
@@ -46,20 +49,18 @@ boolean previous_contact = false;
 void loop() {
     // execute always
 
-    //TODO get gear
-
 
     OBD2events();
 
     // shutdown screen if contact is off
     if (isContact()){
         if (!previous_contact){
-            enable();
+            setMainScreen();
             previous_contact = true;
         }
     } else{
         if (previous_contact){
-            disable();
+            setSplashScreen();
             previous_contact = false;
         }
     }
@@ -79,6 +80,10 @@ void loop() {
 
     //update rpm LEDS
     rpmledInverse(OBD2RPM(OBD2db)/1000);
+
+    // check buttons
+    checkbuttons();
+
 
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){

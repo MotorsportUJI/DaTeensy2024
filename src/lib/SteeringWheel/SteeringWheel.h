@@ -2,6 +2,7 @@
 #define STEERINGWHEEL
 
 #include <Arduino.h>
+#include "lib/OBD2/OBD2.h"
 
 void rpmled(int nleds);
 void rpmledInverse(int nleds);
@@ -21,7 +22,10 @@ void sendDTCcount(int str);
 void sendPressure1(int str);
 void sendPressure2(int str);
 
-void enable();
-void disable();
+void sendDTCDebugScreen(const uint16_t msg[], uint8_t length);
+
+void setMainScreen();
+void setSplashScreen();
+void setDebugScreen();
 
 #endif

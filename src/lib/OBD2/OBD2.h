@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
 #include "settings.h"
+#include "lib/SteeringWheel/SteeringWheel.h"
 
 // ids available on MOTOR
 #define  MONITOR_STATUS_SINCE_DTCS_CLEARED      0x01
@@ -66,9 +67,13 @@ typedef struct {
 // functions
 void initOBD2(OBD2sensordata &database);
 void askPID(uint8_t id);
+// ask
+void clearDTC();
+
 void OBD2events();
 
 void receivedOBD2callback(const CAN_message_t &msg);
+void dispatchMessage(const uint8_t msg[], uint8_t lenght);
 
 void printOBD2ALL(OBD2sensordata database);
 
@@ -77,11 +82,15 @@ String OBD2toCSV(OBD2sensordata database);
 boolean isContact();
 
 
+
 // conversions
 uint16_t OBD2RPM(OBD2sensordata db);
 float OBD2TMP(uint8_t tmp);
 float OBD2PC(uint8_t tmp);
 float OBD2Trim(uint8_t tmp);
+
+void readDTC();
+const char* getDTCstring(uint16_t dtc);
 
 
 #endif
