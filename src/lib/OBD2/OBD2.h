@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
 #include "settings.h"
-#include "lib/SteeringWheel/SteeringWheel.h"
+
 
 // ids available on MOTOR
 #define  MONITOR_STATUS_SINCE_DTCS_CLEARED      0x01
@@ -88,9 +88,14 @@ uint16_t OBD2RPM(OBD2sensordata db);
 float OBD2TMP(uint8_t tmp);
 float OBD2PC(uint8_t tmp);
 float OBD2Trim(uint8_t tmp);
+float OBD2Volt(OBD2sensordata db);
+float OBD2VoltO2(uint8_t v);
+float OBD2Advance(uint8_t v);
 
 void readDTC();
 const char* getDTCstring(uint16_t dtc);
 
+
+#include "lib/SteeringWheel/SteeringWheel.h"
 
 #endif

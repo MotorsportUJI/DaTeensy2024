@@ -64,7 +64,7 @@ void loop() {
             previous_contact = false;
         }
     }
-
+    // updateScreen
     sendOBDdata(OBD2db);
     sendGear(getGear());
 

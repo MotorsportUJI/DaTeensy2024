@@ -114,56 +114,98 @@ void sendRPM(int str) {
     endMessage();
 
 }
+void sendVoltage(float str) {
+    
+    ser->printf("voltage.txt=\"%.2f\"",str);
+    endMessage();
+
+}
 
 void sendCOLTMP(float str) {
     
-    ser->printf("watertemp.txt=\"%.2f\"",str);
+    ser->printf("watertemp.txt=\"%.1f\"",str);
     endMessage();
 
 }
 
 void sendAIRTMP(float str) {
     
-    ser->printf("airtemp.txt=\"%.2f\"",str);
+    ser->printf("airtemp.txt=\"%.1f\"",str);
     endMessage();
 
 }
 
 void sendTPS(float str){
     uint8_t str_int = round(str);
-    ser->printf("throttlebar.val=%d",str_int);
-    endMessage();
+    //ser->printf("throttlebar.val=%d",str_int);
+    //endMessage();
     ser->printf("throttle.txt=\"%2f\"%",str);
     endMessage();
 
 }
 
-void sendTrim1(float str){
-    ser->printf("minifold1.txt=\"%.3f\"",str);
+void sendTPSrel(float str){
+    uint8_t str_int = round(str);
+    //ser->printf("throttlebar.val=%d",str_int);
+    //endMessage();
+    ser->printf("throttlerel.txt=\"%2f\"%",str);
+    endMessage();
+
+}
+void sendEngineLoad(float str){
+    uint8_t str_int = round(str);
+    ser->printf("engineload.txt=\"%2f\"%",str);
     endMessage();
 
 }
 
-void sendTrim2(float str){
-    ser->printf("minifold2.txt=\"%.3f\"",str);
+void sendTrim(float str){
+    ser->printf("FT.txt=\"%.3f\"",str);
+    endMessage();
+
+}
+
+void send02Trim(float str){
+    ser->printf("O2trim.txt=\"%.3f\"",str);
     endMessage();
 }
+
+void send02Volt(float str){
+    ser->printf("O2v.txt=\"%.2f\"",str);
+    endMessage();
+}
+
 
 void sendDTCcount(int str){
     ser->printf("dtc.txt=\"%d\"",str);
     endMessage();
 }
 
-void sendPressure1(int str){
-    ser->printf("presion1.txt=\"%d\"",str);
+void sendAbsPressure(int str){
+    ser->printf("presAbs.txt=\"%d\"",str);
     endMessage();
 
 }
 
-void sendPressure2(int str){
-    ser->printf("presion2.txt=\"%d\"",str);
+void sendIntakePressure(int str){
+    ser->printf("presIntake.txt=\"%d\"",str);
     endMessage();
 
+}
+
+void sendFuelSystemStatus(int sta){
+    ser->printf("fss.txt=\"%d\"",sta);
+    endMessage();
+}
+
+void sendTimingAdvance(float sta){
+    ser->printf("Tadv.txt=\"%.1f\"",sta);
+    endMessage();
+}
+
+void sendSpeed(int sta){
+    ser->printf("speed.txt=\"%d\"",sta);
+    endMessage();
 }
 
 
@@ -215,11 +257,21 @@ void sendOBDdata(OBD2sensordata OBD2db){
     sendRPM(OBD2RPM(OBD2db));
     sendCOLTMP(OBD2TMP(OBD2db.Engine_coolant_temperature));
     sendAIRTMP(OBD2TMP(OBD2db.intake_air_temperature));
-    sendTPS(OBD2PC(OBD2db.relavite_throttle_position));
-    //sendTrim1(OBD2Trim(OBD2db.long_term_fuel_trim));
-    //sendTrim2(OBD2Trim(OBD2db.oxygen_sensor_long_term_fuel_trim));
-    sendPressure1(OBD2db.absolute_barometric_presure);
-    sendPressure2(OBD2db.intake_manifold_absolute_pressure);
+    sendTPS(OBD2PC(OBD2db.throttle_position));
+    sendTPSrel(OBD2PC(OBD2db.relavite_throttle_position));
+
+    sendAbsPressure(OBD2db.absolute_barometric_presure);
+    sendIntakePressure(OBD2db.intake_manifold_absolute_pressure);
     sendDTCcount(OBD2db.DTC_CNT);
-    
+
+    sendVoltage(OBD2Volt(OBD2db));
+    sendEngineLoad(OBD2PC(OBD2db.Calculated_Engine_load));
+    sendFuelSystemStatus(OBD2db.Fuel_system_status);
+
+    sendTrim(OBD2Trim(OBD2db.long_term_fuel_trim));
+    send02Trim(OBD2Trim(OBD2db.oxygen_sensor_long_term_fuel_trim));
+    send02Volt(OBD2VoltO2(OBD2db.oxygen_sensor_voltage));
+
+    sendTimingAdvance(OBD2Advance(OBD2db.timing_advance));
+    sendSpeed(OBD2db.vehicle_speed);
 }

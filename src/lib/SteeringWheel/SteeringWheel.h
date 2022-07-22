@@ -15,12 +15,13 @@ void sendCOLTMP(float str);
 void sendAIRTMP(float str);
 
 void sendTPS(float str);
-void sendTrim1(float str);
-void sendTrim2(float str);
+void sendTrim(float str);
+void send02Trim(float str);
 void sendDTCcount(int str);
+void sendVoltage(float str);
 
-void sendPressure1(int str);
-void sendPressure2(int str);
+void sendAbsPressure(int str);
+void sendIntakePressure(int str);
 
 void sendDTCDebugScreen(const uint16_t msg[], uint8_t length);
 

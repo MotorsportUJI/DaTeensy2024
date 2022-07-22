@@ -6,7 +6,7 @@ bool previous_red = false;
 
 void checkbuttons(){
     // if button pressed
-    if (digitalRead(GREEN_BUTTON) == 0){
+    if (digitalRead(GREEN_BUTTON) == 0 && isContact()){
         if (millis() - last_time_green_pressed < 1000){
             return;
         }
@@ -16,7 +16,7 @@ void checkbuttons(){
         last_time_green_pressed = millis();
     }
 
-        if (digitalRead(RED_BUTTON) == 0){
+        if (digitalRead(RED_BUTTON) == 0 && isContact()){
         if (millis() - last_time_red_pressed < 1000){
             return;
         }
@@ -28,7 +28,7 @@ void checkbuttons(){
             previous_red = true;
         } else {
             //digitalWrite(DEBUG_LED, LOW);
-            setMainScreen();
+                setMainScreen();
             previous_red = false;
         }
 
