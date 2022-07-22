@@ -28,4 +28,7 @@ void setMainScreen();
 void setSplashScreen();
 void setDebugScreen();
 
+
+void sendOBDdata(OBD2sensordata OBD2db);
+
 #endif
