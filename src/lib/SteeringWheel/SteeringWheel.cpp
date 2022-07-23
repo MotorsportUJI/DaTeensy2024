@@ -108,6 +108,15 @@ void sendGear(int str) {
     endMessage();
 }
 
+void sendOil(bool str){
+    if (str){
+        ser->printf("oil.txt=\"OFF\"");
+    } else{
+        ser->printf("oil.txt=\"ON\"");
+    }
+    endMessage();
+}
+
 void sendRPM(int str) {
     
     ser->printf("rpm.txt=\"%d\"",str);
@@ -139,7 +148,7 @@ void sendTPS(float str){
     uint8_t str_int = round(str);
     //ser->printf("throttlebar.val=%d",str_int);
     //endMessage();
-    ser->printf("throttle.txt=\"%2f\"%",str);
+    ser->printf("throttle.txt=\"%.1f\"%",str);
     endMessage();
 
 }
@@ -148,13 +157,13 @@ void sendTPSrel(float str){
     uint8_t str_int = round(str);
     //ser->printf("throttlebar.val=%d",str_int);
     //endMessage();
-    ser->printf("throttlerel.txt=\"%2f\"%",str);
+    ser->printf("throttlerel.txt=\"%.1f\"%",str);
     endMessage();
 
 }
 void sendEngineLoad(float str){
     uint8_t str_int = round(str);
-    ser->printf("engineload.txt=\"%2f\"%",str);
+    ser->printf("engineload.txt=\"%2.2f\"%",str);
     endMessage();
 
 }
@@ -194,7 +203,32 @@ void sendIntakePressure(int str){
 }
 
 void sendFuelSystemStatus(int sta){
-    ser->printf("fss.txt=\"%d\"",sta);
+    char tosend[32];;
+    if (sta == 0){
+        char yeah[] = "ENGINE OFF";
+        strcpy(tosend,yeah);
+    } else if (sta == 1) {
+        char yeah[] = "OPEN LOOP \\rNO ENOUGH\\rTEMP";
+        strcpy(tosend,yeah);
+
+    } else if (sta == 2){
+        char yeah[] = "CLOSED \\r LOOP";
+        strcpy(tosend,yeah);
+    } else if (sta == 4){
+        char yeah[] = "OPEN LOOP\\rDUE TO\\rfuel cut decel";
+        strcpy(tosend,yeah);
+    } else if (sta == 8){
+        char yeah[] = "OPEN LOOP\\rSYSTEM \\rFAILURE";
+        strcpy(tosend,yeah);
+
+    } else if (sta == 16){
+        char yeah[] = "CLOSED \\rLOOP\\rWITH FAULTS";
+        strcpy(tosend,yeah);
+
+    }
+
+    Serial.printf("fss.txt=\"%s\"\n",tosend);
+    ser->printf("fss.txt=\"%s\"",tosend);
     endMessage();
 }
 

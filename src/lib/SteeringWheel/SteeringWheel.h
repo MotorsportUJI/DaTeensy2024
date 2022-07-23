@@ -10,6 +10,7 @@ void rpmledInverse(int nleds);
 void initScreen(HardwareSerial &_serial);
 
 void sendGear(int str);
+void sendOil(bool str);
 void sendRPM(int str);
 void sendCOLTMP(float str);
 void sendAIRTMP(float str);

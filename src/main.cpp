@@ -32,10 +32,13 @@ void setup() {
     initSD();
 
     initGear();
+    pinMode(OIL_PRESSURE_PIN,INPUT);
 
     rpmled(0);
     OBD2db.engine_rpmA=0;
     OBD2db.engine_rpmB=0;
+
+
 
     pinMode(DEBUG_LED, OUTPUT);
 }
@@ -67,6 +70,8 @@ void loop() {
     // updateScreen
     sendOBDdata(OBD2db);
     sendGear(getGear());
+
+    sendOil(digitalRead(OIL_PRESSURE_PIN));
 
 
     //update rpm LEDS
