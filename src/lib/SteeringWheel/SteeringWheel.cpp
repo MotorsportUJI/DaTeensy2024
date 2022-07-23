@@ -227,7 +227,7 @@ void sendFuelSystemStatus(int sta){
 
     }
 
-    Serial.printf("fss.txt=\"%s\"\n",tosend);
+    //Serial.printf("fss.txt=\"%s\"\n",tosend);
     ser->printf("fss.txt=\"%s\"",tosend);
     endMessage();
 }
@@ -266,11 +266,11 @@ void sendDebugmsg(int msg, const char* debugstring){
 }
 
 void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
-    for(int i = 0; i<length; i++)
+    //for(int i = 0; i<length; i++)
     //Serial.printf("%#x ", msg[i]);
     //Serial.println();
     for (int i = 0; i < length; i++){
-        const char* yeah = getDTCstring(msg[i]);
+        char* yeah = getDTCstring(msg[i]);
         if (yeah != NULL){
             sendDebugmsg(i, yeah);
         } else{

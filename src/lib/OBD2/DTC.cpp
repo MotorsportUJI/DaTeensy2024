@@ -1,7 +1,33 @@
 #include "OBD2.h"
+char* getStringFromNumber(uint16_t dtc){
+    char* ret = (char*) malloc(10);
+    char c = 'P';
+    uint8_t type = dtc & 0x0000C000;
+    
+    switch (type){
+        case 0:
+        c = 'P';
+        break;
+        case 1:
+        c = 'C';
+        break;
+        case 2:
+        c = 'B';
+        break;
+        case 3:
+        c = 'U';
+        break;
+    }
 
-const char* getDTCstring(uint16_t dtc){
-//    Serial.printf("%x \n",dtc);
+
+    uint16_t d = dtc & 0x00003FFF;
+    snprintf(ret,10,"%c%x",c,d);
+    //Serial.printf("%c%x\n",c,d);
+    return ret;
+}
+
+char* getDTCstring(uint16_t dtc){
+ //   Serial.printf("%x \n",dtc);
 const char *a[4619];
 a[0] = "B1200,Climate Control Pushbutton Circuit\\r Failure";
 a[1] = "B1201,Fuel Sender Circuit Failure";
@@ -4629,8 +4655,9 @@ int codes[4619] = {0x9200,0x9201,0x9202,0x9203,0x9204,0x9205,0x9206,0x9207,0x920
 
 for (int i = 0; i <4619; i++){
         if (codes[i] == dtc){
-            return a[i];
+            return (char*) a[i];
         }
     }
-    return NULL;
+
+    return getStringFromNumber(dtc);
 }

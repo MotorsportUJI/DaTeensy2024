@@ -93,7 +93,7 @@ float OBD2VoltO2(uint8_t v);
 float OBD2Advance(uint8_t v);
 
 void readDTC();
-const char* getDTCstring(uint16_t dtc);
+char* getDTCstring(uint16_t dtc);
 
 
 #include "lib/SteeringWheel/SteeringWheel.h"
