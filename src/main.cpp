@@ -89,6 +89,11 @@ void loop() {
         to_save += millis();
         to_save += ",";
         to_save += OBD2toCSV(OBD2db);
+        // add gear and oil to log
+        to_save += ",";
+        to_save += String(getGear());
+        to_save += ",";
+        to_save += String(digitalRead(OIL_PRESSURE_PIN));
         saveLine(to_save);
         elapsed_100ms = millis();
     }
