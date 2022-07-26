@@ -261,6 +261,10 @@ void receivedRPMcallback(const CAN_message_t &msg){
 
 String getBufferRPM(){
     String ret = "";
+    for (int i = 0; i < 8; i++){
+        ret += bufferRPM[i];
+        ret += " ";
+    }
 
     return ret;
 }

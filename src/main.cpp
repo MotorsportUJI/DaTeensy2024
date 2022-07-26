@@ -53,7 +53,7 @@ void setup() {
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
 uint32_t elapsed_100ms = 0;
-uint32_t elapsed_10ms = 0;
+uint32_t elapsed_50ms = 0;
 
 boolean previous_contact = false;
 boolean previous_fss = false;
@@ -77,8 +77,8 @@ void loop() {
         }
     }
 
+    if (millis() - elapsed_50ms > 50){
 
-    if (millis() - elapsed_10ms > 10){
         // updateScreen
         sendOBDdata(OBD2db);
         sendGear(getGear());
@@ -92,12 +92,18 @@ void loop() {
         // check buttons
         checkbuttons();
 
-        elapsed_10ms = millis();
+        elapsed_50ms = millis();
     }
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
         // emulateDash
         emulateDash();
+
+        // print stuff to read rpm from yamaha CAN
+        Serial.print(getBufferRPM());
+        Serial.print("||");
+        Serial.println(OBD2RPM(OBD2db));
+
         // print data to sd
         String to_save = "";
         to_save += millis();

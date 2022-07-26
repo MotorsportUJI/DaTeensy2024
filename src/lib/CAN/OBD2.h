@@ -81,6 +81,7 @@ void dispatchMessage(const uint8_t msg[], uint8_t lenght);
 void printOBD2ALL(OBD2sensordata database);
 
 String OBD2toCSV(OBD2sensordata database);
+String getBufferRPM();
 
 boolean isContact();
 
