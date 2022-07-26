@@ -1,3 +1,8 @@
+#ifndef UTILS
+#define UTILS
+
+#include <Arduino.h>
+
 //for(int i = 0; i<multiframe_readed_bytes; i++)
 //    Serial.printf("%#x ", multiframe_response[i]);
 //Serial.println();
@@ -12,3 +17,6 @@
   (byte & 0x04 ? '1' : '0'), \
   (byte & 0x02 ? '1' : '0'), \
   (byte & 0x01 ? '1' : '0') 
+
+void printFreq();
+#endif

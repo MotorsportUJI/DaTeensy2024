@@ -75,7 +75,7 @@ void clearDTC();
 void OBD2events();
 
 void receivedOBD2callback(const CAN_message_t &msg);
-void handleRPM();
+void receivedRPMcallback(const CAN_message_t &msg);
 void dispatchMessage(const uint8_t msg[], uint8_t lenght);
 
 void printOBD2ALL(OBD2sensordata database);
