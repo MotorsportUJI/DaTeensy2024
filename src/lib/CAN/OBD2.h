@@ -6,6 +6,7 @@
 #include "settings.h"
 
 #include "lib/Utils/Utils.h"
+#include "lib/sensors/gear.h"
 
 // ids available on MOTOR
 #define  MONITOR_STATUS_SINCE_DTCS_CLEARED      0x01

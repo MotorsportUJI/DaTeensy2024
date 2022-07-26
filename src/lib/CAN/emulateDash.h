@@ -4,6 +4,6 @@
 #include <Arduino.h>
 #include "OBD2.h"
 
-void emulateDash(uint8_t gear);
+void emulateDash();
 
 #endif

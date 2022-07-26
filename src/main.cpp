@@ -18,13 +18,17 @@
 
 OBD2sensordata OBD2db = {0};
 Packet RadioPacket = {0};
-
+IntervalTimer EmulateDashTimer;
 
 void setup() {
+
     // init serial
     #ifdef DEBUG
     Serial.begin(115200); 
     #endif
+
+    EmulateDashTimer.priority(255);
+    EmulateDashTimer.begin(emulateDash, 100000);
 
 
     initScreen(ScreenUART);
@@ -87,9 +91,9 @@ void loop() {
 
 
     // execute each 100ms
-    if (millis() - elapsed_100ms > 100){
+    if (millis() - elapsed_100ms > 90){
         // emulateDash
-        emulateDash(getGear());
+        //emulateDash();
         // print data to sd
         String to_save = "";
         to_save += millis();

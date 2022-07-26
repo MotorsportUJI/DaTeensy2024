@@ -420,8 +420,8 @@ boolean isContact(){
 }
 
 
-void emulateDash(uint8_t gear){
-    uint8_t to_send = gear << 5;
+void emulateDash(){
+    uint8_t to_send = getGear() << 5;
     CAN_message_t dashGear;
     dashGear.id = 0x236;
     dashGear.buf[0] = to_send; // put gear over here
