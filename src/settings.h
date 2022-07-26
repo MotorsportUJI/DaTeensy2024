@@ -4,7 +4,8 @@
 #define ScreenUART Serial7
 #define RadioUART Serial8
 
-#define EEPROM_base_address 0
+#define EEPROM_time_base_address 0
+#define EEPROM_fss_base_address 4
 
 #define CAN CAN3
 #define DEBUG

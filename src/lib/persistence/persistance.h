@@ -7,6 +7,6 @@
 
 uint32_t readCounter(uint32_t base_address);
 void increaseTimeCounter(uint32_t base_address);
-
+String timeToString(uint32_t time);
 
 #endif

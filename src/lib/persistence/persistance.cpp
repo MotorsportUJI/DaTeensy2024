@@ -33,3 +33,19 @@ void increaseTimeCounter(uint32_t base_address){
         EEPROM.write(base_address + 3, b3_new);
     }
 }
+
+String timeToString(uint32_t time){
+    uint32_t days = time / 1440;
+    uint32_t hours = (time - days*1440) / 60;
+    uint32_t minutes = (time - days*1440 - hours * 60 );
+    
+    String ret = "";
+    ret += days;
+    ret += " Days, ";
+    ret += hours;
+    ret += " Hours, ";
+    ret += minutes;
+    ret += " Minutes";
+
+    return ret;
+}

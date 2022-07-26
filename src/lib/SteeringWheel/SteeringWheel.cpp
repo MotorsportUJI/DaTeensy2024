@@ -265,6 +265,15 @@ void sendDebugmsg(int msg, const char* debugstring){
     endMessage();
 }
 
+void sendTime(){
+    String to_send = "";
+    to_send += "Time Alive: ";
+    to_send += timeToString(readCounter(EEPROM_time_base_address));
+    to_send += "\\rTime Engine On: ";
+    to_send += timeToString(readCounter(EEPROM_fss_base_address));
+    sendDebugmsg(7, to_send.c_str());
+}
+
 void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
     //for(int i = 0; i<length; i++)
     //Serial.printf("%#x ", msg[i]);
@@ -279,11 +288,12 @@ void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
         sendDebugmsg(i, yeah);
         }
 
-        if (i >= 7){
+        if (i >= 6){
             break;
         }
     }
 
+    sendTime();
 }
 
 void sendOBDdata(OBD2sensordata OBD2db){

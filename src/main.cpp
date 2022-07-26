@@ -47,7 +47,9 @@ void setup() {
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
 uint32_t elapsed_100ms = 0;
+
 boolean previous_contact = false;
+boolean previous_fss = false;
 
 void loop() {
     // execute always
@@ -116,10 +118,19 @@ void loop() {
     if (millis() - elapsed_minute > 60* 1000){
 
         // increase time alive counter
-        increaseTimeCounter(EEPROM_base_address);
-        elapsed_minute = millis();
-        // increase engine on time??
+        increaseTimeCounter(EEPROM_time_base_address);
+        // increase engine on time
 
+        if (OBD2db.Fuel_system_status != 0){
+            if (previous_fss){
+                increaseTimeCounter(EEPROM_fss_base_address);
+            }
+            previous_fss = true;
+        } else {
+            previous_fss = false;
+        }
+    
+    elapsed_minute = millis();
     }
 
 }

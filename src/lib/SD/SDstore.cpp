@@ -4,7 +4,7 @@
 String storeFile = "";
 
 void generateFileName(){
-        uint32_t current_time = readCounter(EEPROM_base_address);
+        uint32_t current_time = readCounter(EEPROM_time_base_address);
         storeFile = String(current_time);
         String originalName = String(current_time);
         
