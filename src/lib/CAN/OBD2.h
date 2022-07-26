@@ -5,6 +5,7 @@
 #include <FlexCAN_T4.h>
 #include "settings.h"
 
+#include "lib/Utils/Utils.h"
 
 // ids available on MOTOR
 #define  MONITOR_STATUS_SINCE_DTCS_CLEARED      0x01

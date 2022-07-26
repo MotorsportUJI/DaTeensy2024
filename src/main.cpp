@@ -1,6 +1,8 @@
 #include <Arduino.h>
 
-#include "lib/OBD2/OBD2.h"
+#include "lib/CAN/OBD2.h"
+#include "lib/CAN/emulateDash.h"
+
 #include "lib/persistence/persistance.h"
 #include "lib/SD/SDstore.h"
 
@@ -86,6 +88,8 @@ void loop() {
 
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
+        // emulateDash
+        emulateDash(getGear());
         // print data to sd
         String to_save = "";
         to_save += millis();

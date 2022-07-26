@@ -2,7 +2,7 @@
 #define STEERINGWHEEL
 
 #include <Arduino.h>
-#include "lib/OBD2/OBD2.h"
+#include "lib/CAN/OBD2.h"
 #include "lib/persistence/persistance.h"
 
 void rpmled(int nleds);

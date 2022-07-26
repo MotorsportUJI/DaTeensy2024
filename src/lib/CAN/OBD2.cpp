@@ -419,3 +419,26 @@ boolean isContact(){
     return contact;
 }
 
+
+void emulateDash(uint8_t gear){
+    uint8_t to_send = gear << 5;
+    CAN_message_t dashGear;
+    dashGear.id = 0x236;
+    dashGear.buf[0] = to_send; // put gear over here
+    dashGear.len = 1;
+
+    //Serial.printf(""BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(dashGear.buf[0]));
+    //Serial.println();
+
+
+
+    CAN_message_t dashButtons;
+    dashButtons.id = 0x22e;
+    dashButtons.buf[0] = 0x0; // intermitent buttons and so on
+    dashButtons.buf[1] = 0x0;
+    dashButtons.len = 2;
+
+    myCan.write(dashGear);
+    myCan.write(dashButtons);
+}
+
