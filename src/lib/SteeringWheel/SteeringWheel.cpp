@@ -260,9 +260,10 @@ void setDebugScreen(){
 }
 
 void sendDebugmsg(int msg, const char* debugstring){
-    //Serial.printf("msg%d.txt=\"%s\"",msg,debugstring);
+//    Serial.printf("msg%d.txt=\"%s\"\n",msg,debugstring);
     ser->printf("msg%d.txt=\"%s\"",msg,debugstring);
     endMessage();
+    delay(100);
 }
 
 void sendTime(){
@@ -273,11 +274,16 @@ void sendTime(){
     to_send += timeToString(readCounter(EEPROM_fss_base_address));
     sendDebugmsg(7, to_send.c_str());
 }
+#define __disable_irq() __asm__ volatile("CPSID i":::"memory");
+#define __enable_irq()  __asm__ volatile("CPSIE i":::"memory");
+
 
 void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
+    //__disable_irq();
     //for(int i = 0; i<length; i++)
     //Serial.printf("%#x ", msg[i]);
     //Serial.println();
+
     for (int i = 0; i < length; i++){
         char* yeah = getDTCstring(msg[i]);
         if (yeah != NULL){
@@ -294,6 +300,7 @@ void sendDTCDebugScreen(const uint16_t msg[], uint8_t length){
     }
 
     sendTime();
+    //__enable_irq();
 }
 
 void sendOBDdata(OBD2sensordata OBD2db){
