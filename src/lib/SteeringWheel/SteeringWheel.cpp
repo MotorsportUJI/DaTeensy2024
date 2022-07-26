@@ -86,6 +86,11 @@ void initScreen(HardwareSerial &_serial){
     ser = &_serial;
     ser->begin(115200);
 
+    void* buffer = malloc(1024);
+
+    ser->addMemoryForWrite(buffer, 1024);
+    //ser->print("bauds=921600");
+
 }
 
 void endMessage(){

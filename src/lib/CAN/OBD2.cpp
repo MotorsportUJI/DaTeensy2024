@@ -20,13 +20,20 @@ void initOBD2(OBD2sensordata &database){
     myCan.begin();
     myCan.setBaudRate(500000);
     myCan.setMaxMB(20);
+
     myCan.enableFIFO();
     myCan.enableFIFOInterrupt();
     myCan.onReceive(FIFO,receivedOBD2callback);
 
+    myCan.setMB(MB10, RX, STD);
+    myCan.setMBFilter(REJECT_ALL);
+    myCan.setMBFilter(MB10, 0x20A);
+
     // set up FIFO filter (OBD2)
     myCan.setFIFOFilter(REJECT_ALL);
     myCan.setFIFOFilter(0, 0x7E8, STD);
+
+    myCan.mailboxStatus();
 }
 
 
@@ -238,6 +245,19 @@ void dispatchMessage(const uint8_t msg[], uint8_t length){
     }
 }
 
+int counter = 0;
+int ms = 0;
+void handleRPM(){
+    CAN_message_t msg;
+    //if (myCan.read(msg)){
+        if (millis()-ms > 1000){
+            Serial.println(counter);
+            ms = millis();
+            counter = 0;
+        }
+        counter++;
+    //}
+}
 
 
 
@@ -249,6 +269,7 @@ void readDTC(){
 void OBD2events(){
     // process can callbacks
     myCan.events();
+    handleRPM();
 
     // restart asking if not response 
     if (millis()-time_received > 250){

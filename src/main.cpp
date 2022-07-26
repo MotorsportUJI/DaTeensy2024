@@ -24,7 +24,7 @@ void setup() {
 
     // init serial
     #ifdef DEBUG
-    Serial.begin(115200); 
+    Serial.begin(115200);
     #endif
 
     EmulateDashTimer.priority(255);
@@ -53,6 +53,7 @@ void setup() {
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
 uint32_t elapsed_100ms = 0;
+uint32_t elapsed_10ms = 0;
 
 boolean previous_contact = false;
 boolean previous_fss = false;
@@ -75,23 +76,27 @@ void loop() {
             previous_contact = false;
         }
     }
-    // updateScreen
-    sendOBDdata(OBD2db);
-    sendGear(getGear());
-
-    sendOil(digitalRead(OIL_PRESSURE_PIN));
 
 
-    //update rpm LEDS
-    rpmledInverse(OBD2RPM(OBD2db)/1000);
+    if (millis() - elapsed_10ms > 10){
+        // updateScreen
+        sendOBDdata(OBD2db);
+        sendGear(getGear());
 
-    // check buttons
-    checkbuttons();
+        sendOil(digitalRead(OIL_PRESSURE_PIN));
 
 
+        //update rpm LEDS
+        rpmledInverse(OBD2RPM(OBD2db)/1000);
+
+        // check buttons
+        checkbuttons();
+
+        elapsed_10ms = millis();
+    }
 
     // execute each 100ms
-    if (millis() - elapsed_100ms > 90){
+    if (millis() - elapsed_100ms > 100){
         // emulateDash
         //emulateDash();
         // print data to sd
