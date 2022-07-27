@@ -20,7 +20,11 @@ OBD2sensordata OBD2db = {0};
 Packet RadioPacket = {0};
 //IntervalTimer EmulateDashTimer;
 
+
+
+
 void setup() {
+    
 
     // init serial
     #ifdef DEBUG
@@ -29,6 +33,8 @@ void setup() {
 
     //EmulateDashTimer.priority(255);
    // EmulateDashTimer.begin(emulateDash, 100000);
+
+    BUTTONS::initButtons();
 
 
     initScreen(ScreenUART);
@@ -90,7 +96,9 @@ void loop() {
         rpmledInverse(OBD2RPM(OBD2db)/1000);
 
         // check buttons
-        checkbuttons();
+        //green_button.events();
+        //red_button.events();
+        BUTTONS::checkButtons();
 
         elapsed_50ms = millis();
     }
@@ -100,9 +108,9 @@ void loop() {
         emulateDash();
 
         // print stuff to read rpm from yamaha CAN
-        Serial.print(getBufferRPM());
-        Serial.print("||");
-        Serial.println(OBD2RPM(OBD2db));
+        //Serial.print(getBufferRPM());
+        //Serial.print("||");
+        //Serial.println(OBD2RPM(OBD2db));
 
         // print data to sd
         String to_save = "";
