@@ -3,7 +3,10 @@
 
 #include <Arduino.h>
 
-void initGear();
-int getGear();
+namespace GEAR {
+    void initGear();
+    int getGear();
+}
+
 
 #endif

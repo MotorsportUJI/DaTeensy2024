@@ -56,8 +56,8 @@ namespace BUTTONS {
 
     void onRedButtonLongPress(){
 
-        clearDTC();
-        setMainScreen();
+        OBD2::clearDTC();
+        DISPLAYY::setMainScreen();
 
     }
 
@@ -66,11 +66,11 @@ namespace BUTTONS {
     void onRedButtonPress(){
     if (!CURRENT_SCREEN){
 
-        readDTC();
-        setDebugScreen();
+        OBD2::readDTC();
+        DISPLAYY::setDebugScreen();
         CURRENT_SCREEN = true;
     } else {
-        setMainScreen();
+        DISPLAYY::setMainScreen();
         CURRENT_SCREEN = false;
     }
 }

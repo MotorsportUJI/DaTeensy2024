@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
 #include "lib/CAN/OBD2.h"
-#include "lib/CAN/emulateDash.h"
 
 #include "lib/persistence/persistance.h"
 #include "lib/SD/SDstore.h"
@@ -16,8 +15,8 @@
 
 #include "settings.h"
 
-OBD2sensordata OBD2db = {0};
-Packet RadioPacket = {0};
+OBD2::OBD2sensordata OBD2db = {0};
+RADIO::Packet RadioPacket = {0};
 //IntervalTimer EmulateDashTimer;
 
 
@@ -37,16 +36,16 @@ void setup() {
     BUTTONS::initButtons();
 
 
-    initScreen(ScreenUART);
-    initRadio(RadioUART);
+    DISPLAYY::initScreen(ScreenUART);
+    RADIO::initRadio(RadioUART);
 
     initOBD2(OBD2db);
-    initSD();
+    SDSTORE::initSD();
 
-    initGear();
+    GEAR::initGear();
     pinMode(OIL_PRESSURE_PIN,INPUT);
 
-    rpmled(0);
+    DISPLAYY::rpmled(0);
     OBD2db.engine_rpmA=0;
     OBD2db.engine_rpmB=0;
 
@@ -68,17 +67,17 @@ void loop() {
     // execute always
 
 
-    OBD2events();
+    OBD2::OBD2events();
 
     // shutdown screen if contact is off
-    if (isContact()){
+    if (OBD2::isContact()){
         if (!previous_contact){
-            setMainScreen();
+            DISPLAYY::setMainScreen();
             previous_contact = true;
         }
     } else{
         if (previous_contact){
-            setSplashScreen();
+            DISPLAYY::setSplashScreen();
             previous_contact = false;
         }
     }
@@ -86,14 +85,14 @@ void loop() {
     if (millis() - elapsed_50ms > 50){
 
         // updateScreen
-        sendOBDdata(OBD2db);
-        sendGear(getGear());
+        DISPLAYY::sendOBDdata(OBD2db);
+        DISPLAYY::sendGear(GEAR::getGear());
 
-        sendOil(digitalRead(OIL_PRESSURE_PIN));
+        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
 
 
         //update rpm LEDS
-        rpmledInverse(OBD2RPM(OBD2db)/1000);
+        DISPLAYY::rpmledInverse(OBD2CONVERSIONS::OBD2RPM(OBD2db)/1000);
 
         // check buttons
         //green_button.events();
@@ -105,7 +104,7 @@ void loop() {
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
         // emulateDash
-        emulateDash();
+        OBD2::emulateDash();
 
         // print stuff to read rpm from yamaha CAN
         //Serial.print(getBufferRPM());
@@ -119,10 +118,10 @@ void loop() {
         to_save += OBD2toCSV(OBD2db);
         // add gear and oil to log
         to_save += ",";
-        to_save += String(getGear());
+        to_save += String(GEAR::getGear());
         to_save += ",";
         to_save += String(digitalRead(OIL_PRESSURE_PIN));
-        saveLine(to_save);
+        SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
     }
 
@@ -144,12 +143,12 @@ void loop() {
     if (millis() - elapsed_minute > 60* 1000){
 
         // increase time alive counter
-        increaseTimeCounter(EEPROM_time_base_address);
+        PERSISTANCE::increaseTimeCounter(EEPROM_time_base_address);
         // increase engine on time
 
-        if (OBD2db.Fuel_system_status != 0){
+        if (OBD2db.fuel_system_status != 0){
             if (previous_fss){
-                increaseTimeCounter(EEPROM_fss_base_address);
+                PERSISTANCE::increaseTimeCounter(EEPROM_fss_base_address);
             }
             previous_fss = true;
         } else {

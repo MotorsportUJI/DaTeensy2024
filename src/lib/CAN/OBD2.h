@@ -1,5 +1,4 @@
-#ifndef OBD2
-#define OBD2
+#pragma once
 
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
@@ -30,76 +29,65 @@
 #define RELATIVE_THROTTLE_POSITION              0x45
 #define TIME_RUN_WITH_MIL_ON                    0x4d
 
+namespace OBD2{
 
-typedef struct {
-    uint8_t MIL_on = false; // true if dtc should be on
-    uint8_t DTC_CNT = 0; // number of errors detected
-    uint8_t Fuel_system_status = 0; // look table on https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_PID_03
-    
-    uint8_t Calculated_Engine_load = 0; // formula : A/2.55
-    uint8_t Engine_coolant_temperature = 0; // formula : A-40
+    typedef struct {
+        uint8_t MIL_on = false; // true if dtc should be on
+        uint8_t DTC_CNT = 0; // number of errors detected
+        uint8_t fuel_system_status = 0; // look table on https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_PID_03
+        
+        uint8_t Calculated_Engine_load = 0; // formula : A/2.55
+        uint8_t Engine_coolant_temperature = 0; // formula : A-40
 
-    uint8_t long_term_fuel_trim = 0;  // formula : A/1.28 - 100
-    uint8_t intake_manifold_absolute_pressure = 0; // forumula : A
-    uint8_t engine_rpmA = 0;
-    uint8_t engine_rpmB = 0; // formula : (256A + B)/4
-    uint8_t vehicle_speed = 0; // formula : A
-    uint8_t timing_advance = 0; // formula: A/2 -64
-    uint8_t intake_air_temperature = 0; // formula A - 40
-    uint8_t throttle_position = 0; // formula : A/2.55
+        uint8_t long_term_fuel_trim = 0;  // formula : A/1.28 - 100
+        uint8_t intake_manifold_absolute_pressure = 0; // forumula : A
+        uint8_t engine_rpmA = 0;
+        uint8_t engine_rpmB = 0; // formula : (256A + B)/4
+        uint8_t vehicle_speed = 0; // formula : A
+        uint8_t timing_advance = 0; // formula: A/2 -64
+        uint8_t intake_air_temperature = 0; // formula A - 40
+        uint8_t throttle_position = 0; // formula : A/2.55
 
-    uint8_t oxygen_sensor_voltage = 0; // formula : A/200
-    uint8_t oxygen_sensor_long_term_fuel_trim = 0; // formula : B/1.28 - 100
+        uint8_t oxygen_sensor_voltage = 0; // formula : A/200
+        uint8_t oxygen_sensor_long_term_fuel_trim = 0; // formula : B/1.28 - 100
 
-    uint8_t Distance_Traveled_MIL_on_A = 0; 
-    uint8_t Distance_Traveled_MIL_on_B = 0; // formula : 256A + B
+        uint8_t distance_traveled_MIL_on_A = 0; 
+        uint8_t distance_traveled_MIL_on_B = 0; // formula : 256A + B
 
-    uint8_t absolute_barometric_presure = 0; // formula : A
+        uint8_t absolute_barometric_presure = 0; // formula : A
 
-    uint8_t control_module_voltage_A = 0; 
-    uint8_t control_module_voltage_B = 0; // formula : (256A + B) / 1000
+        uint8_t control_module_voltage_A = 0; 
+        uint8_t control_module_voltage_B = 0; // formula : (256A + B) / 1000
 
-    uint8_t relavite_throttle_position = 0; // formula : A/2.55 
+        uint8_t relavite_throttle_position = 0; // formula : A/2.55 
 
-    uint8_t time_run_with_mil_on_A = 0;
-    uint8_t time_run_with_mil_on_B = 0; // formula : 256A + B minutes
+        uint8_t time_run_with_mil_on_A = 0;
+        uint8_t time_run_with_mil_on_B = 0; // formula : 256A + B minutes
 
-} OBD2sensordata;
+    } OBD2sensordata;
 
-// functions
-void initOBD2(OBD2sensordata &database);
-void askPID(uint8_t id);
-// ask
-void clearDTC();
+    // functions
+    void initOBD2(OBD2sensordata &database);
+    void askPID(uint8_t id);
+    // ask
+    void clearDTC();
 
-void OBD2events();
+    void OBD2events();
 
-void receivedOBD2callback(const CAN_message_t &msg);
-void receivedRPMcallback(const CAN_message_t &msg);
-void dispatchMessage(const uint8_t msg[], uint8_t lenght);
+    void receivedOBD2callback(const CAN_message_t &msg);
+    void receivedRPMcallback(const CAN_message_t &msg);
+    void dispatchMessage(const uint8_t msg[], uint8_t lenght);
 
-void printOBD2ALL(OBD2sensordata database);
+    void printOBD2ALL(OBD2sensordata database);
 
-String OBD2toCSV(OBD2sensordata database);
-String getBufferRPM();
+    String OBD2toCSV(OBD2sensordata database);
+    String getBufferRPM();
 
-boolean isContact();
+    boolean isContact();
 
+    void readDTC();
 
-
-// conversions
-uint16_t OBD2RPM(OBD2sensordata db);
-float OBD2TMP(uint8_t tmp);
-float OBD2PC(uint8_t tmp);
-float OBD2Trim(uint8_t tmp);
-float OBD2Volt(OBD2sensordata db);
-float OBD2VoltO2(uint8_t v);
-float OBD2Advance(uint8_t v);
-
-void readDTC();
-char* getDTCstring(uint16_t dtc);
-
+    void emulateDash();
+}
 
 #include "lib/SteeringWheel/SteeringWheel.h"
-
-#endif
