@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
-#include "lib/OBD2/OBD2.h"
+#include "lib/CAN/OBD2.h"
+
 #include "lib/persistence/persistance.h"
 #include "lib/SD/SDstore.h"
 
@@ -14,28 +15,41 @@
 
 #include "settings.h"
 
-OBD2sensordata OBD2db = {0};
-Packet RadioPacket = {0};
+OBD2::OBD2sensordata OBD2db = {0};
+RADIO::Packet RadioPacket = {0};
+//IntervalTimer EmulateDashTimer;
+
+
 
 
 void setup() {
+    
+
     // init serial
     #ifdef DEBUG
-    Serial.begin(115200); 
+    Serial.begin(115200);
     #endif
 
+    //EmulateDashTimer.priority(255);
+   // EmulateDashTimer.begin(emulateDash, 100000);
 
-    initScreen(ScreenUART);
-    initRadio(RadioUART);
+    BUTTONS::initButtons();
+
+
+    DISPLAYY::initScreen(ScreenUART);
+    RADIO::initRadio(RadioUART);
 
     initOBD2(OBD2db);
-    initSD();
+    SDSTORE::initSD();
 
-    initGear();
+    GEAR::initGear();
+    pinMode(OIL_PRESSURE_PIN,INPUT);
 
-    rpmled(0);
+    DISPLAYY::rpmled(0);
     OBD2db.engine_rpmA=0;
     OBD2db.engine_rpmB=0;
+
+
 
     pinMode(DEBUG_LED, OUTPUT);
 }
@@ -44,55 +58,74 @@ void setup() {
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
 uint32_t elapsed_100ms = 0;
+uint32_t elapsed_50ms = 0;
+
 boolean previous_contact = false;
+boolean previous_fss = false;
 
 void loop() {
     // execute always
 
 
-    OBD2events();
+    OBD2::OBD2events();
 
     // shutdown screen if contact is off
-    if (isContact()){
+    if (OBD2::isContact()){
         if (!previous_contact){
-            setMainScreen();
+            DISPLAYY::setMainScreen();
             previous_contact = true;
         }
     } else{
         if (previous_contact){
-            setSplashScreen();
+            DISPLAYY::setSplashScreen();
             previous_contact = false;
         }
     }
 
-    // update screen
-    sendRPM(OBD2RPM(OBD2db));
-    sendCOLTMP(OBD2TMP(OBD2db.Engine_coolant_temperature));
-    sendAIRTMP(OBD2TMP(OBD2db.intake_air_temperature));
-    sendTPS(OBD2PC(OBD2db.relavite_throttle_position));
-    //sendTrim1(OBD2Trim(OBD2db.long_term_fuel_trim));
-    //sendTrim2(OBD2Trim(OBD2db.oxygen_sensor_long_term_fuel_trim));
-    sendPressure1(OBD2db.absolute_barometric_presure);
-    sendPressure2(OBD2db.intake_manifold_absolute_pressure);
-    sendDTCcount(OBD2db.DTC_CNT);
+    if (millis() - elapsed_50ms > 50){
 
-    sendGear(getGear());
+        // updateScreen
+        DISPLAYY::sendOBDdata(OBD2db);
+        DISPLAYY::sendGear(GEAR::getGear());
 
-    //update rpm LEDS
-    rpmledInverse(OBD2RPM(OBD2db)/1000);
-
-    // check buttons
-    checkbuttons();
+        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
 
 
+        //update rpm LEDS
+        DISPLAYY::rpmledInverse(OBD2CONVERSIONS::OBD2RPM(OBD2db)/1000);
+
+        // check buttons
+        //green_button.events();
+        //red_button.events();
+        BUTTONS::checkButtons();
+
+        elapsed_50ms = millis();
+    }
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
+        // emulateDash
+        if (GEAR::getDesiredGear() != 128){
+            OBD2::emulateDash(GEAR::getDesiredGear());
+        } else {
+            OBD2::emulateDash(GEAR::getGear());
+        }
+
+        // print stuff to read rpm from yamaha CAN
+        //Serial.print(getBufferRPM());
+        //Serial.print("||");
+        //Serial.println(OBD2RPM(OBD2db));
+
         // print data to sd
         String to_save = "";
         to_save += millis();
         to_save += ",";
         to_save += OBD2toCSV(OBD2db);
-        saveLine(to_save);
+        // add gear and oil to log
+        to_save += ",";
+        to_save += String(GEAR::getGear());
+        to_save += ",";
+        to_save += String(digitalRead(OIL_PRESSURE_PIN));
+        SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
     }
 
@@ -114,10 +147,19 @@ void loop() {
     if (millis() - elapsed_minute > 60* 1000){
 
         // increase time alive counter
-        increaseTimeCounter(EEPROM_base_address);
-        elapsed_minute = millis();
-        // increase engine on time??
+        PERSISTANCE::increaseTimeCounter(EEPROM_time_base_address);
+        // increase engine on time
 
+        if (OBD2db.fuel_system_status != 0){
+            if (previous_fss){
+                PERSISTANCE::increaseTimeCounter(EEPROM_fss_base_address);
+            }
+            previous_fss = true;
+        } else {
+            previous_fss = false;
+        }
+    
+    elapsed_minute = millis();
     }
 
 }
