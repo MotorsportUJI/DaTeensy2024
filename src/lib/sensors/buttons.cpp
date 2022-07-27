@@ -2,7 +2,6 @@
 
 namespace BUTTONS {
 
-
     // class Button
     Button::Button(uint8_t pin) : _pin(pin) {}
 
@@ -77,6 +76,18 @@ namespace BUTTONS {
 
 void onGreenButtonPress(){
     // change gear to be send
+    uint8_t actual = GEAR::getDesiredGear();
+    if (actual == 128){
+        actual = 0;
+    } else if (actual == 255){
+        actual = 128;
+    } else if (actual == 6){
+        actual = 255;
+    } else {
+        actual++;
+    }
+    GEAR::setDesiredGear(actual);
+
 }
 
 
@@ -90,6 +101,7 @@ void onGreenButtonPress(){
         red_button.begin();
         red_button.setReleased(onRedButtonPress);
         red_button.setLongPressed(onRedButtonLongPress);
+
     }
 
     void checkButtons(){

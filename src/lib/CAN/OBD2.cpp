@@ -454,8 +454,8 @@ namespace OBD2{
     }
 
 
-    void emulateDash(){
-        uint8_t to_send = GEAR::getGear() << 5;
+    void emulateDash(uint8_t gear){
+        uint8_t to_send = gear << 5;
         CAN_message_t dashGear;
         dashGear.id = 0x236;
         dashGear.buf[0] = to_send; // put gear over here

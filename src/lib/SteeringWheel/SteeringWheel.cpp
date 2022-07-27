@@ -114,6 +114,23 @@ namespace DISPLAYY {
         endMessage();
     }
 
+    void sendDesiredGear(int str){
+        if (str == 255){
+            ser->printf("gear2.txt=\"E\"");
+            endMessage();
+            return;
+        }
+        if (str == 128){
+            ser->printf("gear2.txt=\"F\"");
+            endMessage();
+            return;
+        }
+        
+        ser->printf("gear2.txt=\"%d\"",str);
+        endMessage();
+
+    }
+
     void sendOil(bool str){
         if (str){
             ser->printf("oil.txt=\"OFF\"");
@@ -309,6 +326,7 @@ namespace DISPLAYY {
         //__enable_irq();
     }
 
+
     void sendOBDdata(OBD2::OBD2sensordata OBD2db){
         // update screen
         sendRPM(OBD2CONVERSIONS::OBD2RPM(OBD2db));
@@ -331,6 +349,8 @@ namespace DISPLAYY {
 
         sendTimingAdvance(OBD2CONVERSIONS::OBD2Advance(OBD2db.timing_advance));
         sendSpeed(OBD2db.vehicle_speed);
+
+        sendDesiredGear(GEAR::getDesiredGear());
     }
 }
 

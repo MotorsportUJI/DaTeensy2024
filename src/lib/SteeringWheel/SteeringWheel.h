@@ -12,6 +12,7 @@ namespace DISPLAYY {
     void initScreen(HardwareSerial &_serial);
 
     void sendGear(int str);
+    void sendDesiredGear(int str);
     void sendOil(bool str);
     void sendRPM(int str);
     void sendCOLTMP(float str);

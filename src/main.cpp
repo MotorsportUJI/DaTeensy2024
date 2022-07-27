@@ -104,7 +104,11 @@ void loop() {
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
         // emulateDash
-        OBD2::emulateDash();
+        if (GEAR::getDesiredGear() != 128){
+            OBD2::emulateDash(GEAR::getDesiredGear());
+        } else {
+            OBD2::emulateDash(GEAR::getGear());
+        }
 
         // print stuff to read rpm from yamaha CAN
         //Serial.print(getBufferRPM());

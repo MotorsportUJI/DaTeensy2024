@@ -3,12 +3,12 @@
 #include <Arduino.h>
 #include "lib/CAN/OBD2.h"
 #include "lib/SteeringWheel/SteeringWheel.h"
+#include "lib/sensors/gear.h"
 #include "settings.h"
 
 namespace BUTTONS {
 
-typedef void (*TransFuncPtr)();
-
+    typedef void (*TransFuncPtr)();
 
     class Button{
     private:

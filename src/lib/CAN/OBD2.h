@@ -87,7 +87,7 @@ namespace OBD2{
 
     void readDTC();
 
-    void emulateDash();
+    void emulateDash(uint8_t gear);
 }
 
 #include "lib/SteeringWheel/SteeringWheel.h"
