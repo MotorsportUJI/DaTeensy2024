@@ -15,8 +15,8 @@
 
 #define DEBUG_LED 12
 
-#define GREEN_BUTTON 41 // clear dtc
-#define RED_BUTTON 40 // switch screen view
+#define GREEN_BUTTON 40 // clear dtc
+#define RED_BUTTON 41 // switch screen view
 
 
 #endif

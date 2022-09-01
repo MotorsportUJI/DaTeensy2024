@@ -271,6 +271,11 @@ namespace DISPLAYY {
         endMessage();
     }
 
+    void setSensorScreen(){
+    ser->printf("page 3");
+    endMessage();
+    }
+
     void setSplashScreen(){
         ser->printf("page 0");
         endMessage();

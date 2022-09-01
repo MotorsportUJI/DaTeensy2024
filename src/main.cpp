@@ -66,7 +66,7 @@ boolean previous_fss = false;
 void loop() {
     // execute always
 
-
+    
     OBD2::OBD2events();
 
     // shutdown screen if contact is off
@@ -161,5 +161,4 @@ void loop() {
     
     elapsed_minute = millis();
     }
-
 }

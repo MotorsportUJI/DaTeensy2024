@@ -32,6 +32,7 @@ namespace DISPLAYY {
     void setMainScreen();
     void setSplashScreen();
     void setDebugScreen();
+    void setSensorScreen();
 
 
     void sendOBDdata(OBD2::OBD2sensordata OBD2db);
