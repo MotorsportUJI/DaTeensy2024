@@ -302,6 +302,14 @@ namespace DISPLAYY {
         to_send += PERSISTANCE::timeToString(PERSISTANCE::readCounter(EEPROM_fss_base_address));
         sendDebugmsg(7, to_send.c_str());
     }
+
+    void sendTimeEngineOn(uint32_t str){
+        uint32_t hours = str / 3600;
+        uint32_t minutes = (str - hours * 3600) /60;
+        uint32_t seconds = (str - hours*3600 - minutes * 60);
+        ser->printf("time.txt=\"%d:%d:%d\"",hours, minutes, seconds);
+        endMessage();
+    }
     #define __disable_irq() __asm__ volatile("CPSID i":::"memory");
     #define __enable_irq()  __asm__ volatile("CPSIE i":::"memory");
 

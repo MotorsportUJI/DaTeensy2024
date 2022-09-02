@@ -54,6 +54,7 @@ void setup() {
     pinMode(DEBUG_LED, OUTPUT);
 }
 
+uint32_t time_engine_on = 0;
 
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
@@ -89,6 +90,8 @@ void loop() {
         DISPLAYY::sendGear(GEAR::getGear());
 
         DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
+
+        DISPLAYY::sendTimeEngineOn(time_engine_on);
 
 
         //update rpm LEDS
@@ -138,6 +141,11 @@ void loop() {
         //sendPacket(RadioPacket);
 
         //printOBD2ALL(OBD2db);
+        if (OBD2db.fuel_system_status != 0){
+            time_engine_on += 1;
+        } else {
+            time_engine_on = 0;
+        }
 
 
         elapsed_second = millis();
