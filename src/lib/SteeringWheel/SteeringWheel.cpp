@@ -272,7 +272,7 @@ namespace DISPLAYY {
     }
 
     void setSensorScreen(){
-    ser->printf("page 3");
+    ser->printf("page 2");
     endMessage();
     }
 
@@ -283,7 +283,7 @@ namespace DISPLAYY {
     }
 
     void setDebugScreen(){
-        ser->printf("page 2");
+        ser->printf("page 3");
         endMessage();
     }
 

@@ -69,7 +69,7 @@ namespace BUTTONS {
         DISPLAYY::setDebugScreen();
         CURRENT_SCREEN = 1;
     } else if (CURRENT_SCREEN == 1){
-        DISPLAYY::();
+        DISPLAYY::setSensorScreen();
         CURRENT_SCREEN = 2;
     } else {
         DISPLAYY::setMainScreen();
