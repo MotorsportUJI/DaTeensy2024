@@ -60,17 +60,20 @@ namespace BUTTONS {
 
     }
 
-    bool CURRENT_SCREEN = false;
+    uint8_t CURRENT_SCREEN = 0;
 
     void onRedButtonPress(){
-    if (!CURRENT_SCREEN){
+    if (CURRENT_SCREEN == 0){
 
         OBD2::readDTC();
         DISPLAYY::setDebugScreen();
-        CURRENT_SCREEN = true;
+        CURRENT_SCREEN = 1;
+    } else if (CURRENT_SCREEN == 1){
+        DISPLAYY::setSensorScreen();
+        CURRENT_SCREEN = 2;
     } else {
         DISPLAYY::setMainScreen();
-        CURRENT_SCREEN = false;
+        CURRENT_SCREEN = 0;
     }
 }
 

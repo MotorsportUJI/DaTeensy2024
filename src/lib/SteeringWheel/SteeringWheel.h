@@ -18,6 +18,8 @@ namespace DISPLAYY {
     void sendCOLTMP(float str);
     void sendAIRTMP(float str);
 
+    void sendTimeEngineOn(uint32_t str);
+
     void sendTPS(float str);
     void sendTrim(float str);
     void send02Trim(float str);
@@ -32,6 +34,7 @@ namespace DISPLAYY {
     void setMainScreen();
     void setSplashScreen();
     void setDebugScreen();
+    void setSensorScreen();
 
 
     void sendOBDdata(OBD2::OBD2sensordata OBD2db);
