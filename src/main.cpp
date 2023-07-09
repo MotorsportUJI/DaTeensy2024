@@ -66,8 +66,6 @@ boolean previous_contact = false;
 boolean previous_fss = false;
 
 void loop() {    
-    Serial.println(ANALOG::readAnalogValue(15));
-
 
     OBD2::OBD2events();
     BUTTONS::checkButtons();
@@ -130,6 +128,10 @@ void loop() {
         to_save += String(GEAR::getGear());
         to_save += ",";
         to_save += String(digitalRead(OIL_PRESSURE_PIN));
+
+        // add fuel pressure
+        to_save += ",";
+        to_save += String(analogRead(15));
         SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
 
@@ -143,6 +145,8 @@ void loop() {
         DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
 
         DISPLAYY::sendTimeEngineOn(time_engine_on);
+
+        DISPLAYY::sendFuelPressure(analogRead(15));
         elapsed_200ms = millis();
     }
 

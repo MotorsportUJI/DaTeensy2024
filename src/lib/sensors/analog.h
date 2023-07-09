@@ -4,7 +4,8 @@
 #include <Arduino.h>
 
 namespace ANALOG {
-    float readAnalogValue(int pin);
+    float int2voltage(int value);
+    float int2pressurefuel(int value);
 }
 
 #endif

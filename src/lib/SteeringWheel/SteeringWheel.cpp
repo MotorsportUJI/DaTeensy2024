@@ -310,6 +310,14 @@ namespace DISPLAYY {
         ser->printf("time.txt=\"%d:%d:%d\"",hours, minutes, seconds);
         endMessage();
     }
+
+    void sendFuelPressure(int value){
+        ser->printf("fuelpresvolt.txt=\"%.2f\"",ANALOG::int2voltage(value));
+        endMessage();
+        ser->printf("fuelpress.txt=\"%.2f\"", ANALOG::int2pressurefuel(value));
+        endMessage();
+    }
+
     #define __disable_irq() __asm__ volatile("CPSID i":::"memory");
     #define __enable_irq()  __asm__ volatile("CPSIE i":::"memory");
 

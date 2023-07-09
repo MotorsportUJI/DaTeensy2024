@@ -5,6 +5,8 @@
 #include "lib/CAN/Conversions.h"
 #include "lib/persistence/persistance.h"
 
+#include "lib/sensors/analog.h"
+
 namespace DISPLAYY {
     void rpmled(int nleds);
     void rpmledInverse(int nleds);
@@ -35,6 +37,9 @@ namespace DISPLAYY {
     void setSplashScreen();
     void setDebugScreen();
     void setSensorScreen();
+
+    void sendFuelPressure(int value);
+
 
 
     void sendOBDdata(OBD2::OBD2sensordata OBD2db);
