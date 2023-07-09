@@ -85,8 +85,8 @@ namespace DISPLAYY {
 
     void initScreen(HardwareSerial &_serial){
         ser = &_serial;
-        ser->begin(115200);
-
+        //ser->begin(115200);
+        ser->begin(19200);
         void* buffer = malloc(1024);
 
         ser->addMemoryForWrite(buffer, 1024);

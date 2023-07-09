@@ -11,6 +11,7 @@
 #include "lib/sensors/gear.h"
 #include "lib/sensors/buttons.h"
 
+#include "lib/sensors/analog.h"
 
 
 #include "settings.h"
@@ -24,7 +25,6 @@ RADIO::Packet RadioPacket = {0};
 
 void setup() {
     
-
     // init serial
     #ifdef DEBUG
     Serial.begin(115200);
@@ -33,7 +33,7 @@ void setup() {
     //EmulateDashTimer.priority(255);
    // EmulateDashTimer.begin(emulateDash, 100000);
 
-    BUTTONS::initButtons();
+    //BUTTONS::initButtons();
 
 
     DISPLAYY::initScreen(ScreenUART);
@@ -49,7 +49,7 @@ void setup() {
     OBD2db.engine_rpmA=0;
     OBD2db.engine_rpmB=0;
 
-
+    BUTTONS::initButtons();
 
     pinMode(DEBUG_LED, OUTPUT);
 }
@@ -58,44 +58,43 @@ uint32_t time_engine_on = 0;
 
 uint32_t elapsed_minute = 0;
 uint32_t elapsed_second = 0;
+uint32_t elapsed_200ms = 0;
 uint32_t elapsed_100ms = 0;
 uint32_t elapsed_50ms = 0;
 
 boolean previous_contact = false;
 boolean previous_fss = false;
 
-void loop() {
-    // execute always
+void loop() {    
+    Serial.println(ANALOG::readAnalogValue(15));
 
-    
+
     OBD2::OBD2events();
+    BUTTONS::checkButtons();
 
     // shutdown screen if contact is off
     if (OBD2::isContact()){
         if (!previous_contact){
             DISPLAYY::setMainScreen();
             previous_contact = true;
+            digitalWrite(DEBUG_LED, HIGH);
         }
     } else{
         if (previous_contact){
             DISPLAYY::setSplashScreen();
             previous_contact = false;
+            digitalWrite(DEBUG_LED, LOW);
         }
     }
 
+
     if (millis() - elapsed_50ms > 50){
 
-        // updateScreen
-        DISPLAYY::sendOBDdata(OBD2db);
-        DISPLAYY::sendGear(GEAR::getGear());
 
-        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
-
-        DISPLAYY::sendTimeEngineOn(time_engine_on);
 
 
         //update rpm LEDS
-        DISPLAYY::rpmledInverse(OBD2CONVERSIONS::OBD2RPM(OBD2db)/1000);
+        //DISPLAYY::rpmledInverse(OBD2CONVERSIONS::OBD2RPM(OBD2db)/1000);
 
         // check buttons
         //green_button.events();
@@ -106,6 +105,9 @@ void loop() {
     }
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
+
+
+
         // emulateDash
         if (GEAR::getDesiredGear() != 128){
             OBD2::emulateDash(GEAR::getDesiredGear());
@@ -130,6 +132,18 @@ void loop() {
         to_save += String(digitalRead(OIL_PRESSURE_PIN));
         SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
+
+    }
+
+    if (millis() - elapsed_200ms > 200){
+        // updateScreen
+        DISPLAYY::sendOBDdata(OBD2db);
+        DISPLAYY::sendGear(GEAR::getGear());
+
+        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
+
+        DISPLAYY::sendTimeEngineOn(time_engine_on);
+        elapsed_200ms = millis();
     }
 
     // execute each second
@@ -143,12 +157,14 @@ void loop() {
         //printOBD2ALL(OBD2db);
         if (OBD2db.fuel_system_status != 0){
             time_engine_on += 1;
-        } else {
+        } else { 
             time_engine_on = 0;
         }
 
 
         elapsed_second = millis();
+
+
     }
 
     // execute each minute

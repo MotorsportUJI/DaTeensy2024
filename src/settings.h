@@ -1,8 +1,9 @@
 #ifndef SETTINGS
 #define SETTINGS
 
-#define ScreenUART Serial7
-#define RadioUART Serial8
+//swaped on UFS05, f4ck u
+#define ScreenUART Serial8
+#define RadioUART Serial7
 
 #define EEPROM_time_base_address 0
 #define EEPROM_fss_base_address 4

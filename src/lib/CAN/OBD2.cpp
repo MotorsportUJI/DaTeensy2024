@@ -47,9 +47,14 @@ namespace OBD2{
         //myCan.mailboxStatus();
     }
 
-
+    uint32_t elapsed = 0;
 
     void askPID(uint8_t id){ 
+        /*if (id == 0x01){
+            Serial.println(millis()-elapsed);
+            elapsed = millis();
+        }*/
+
         CAN_message_t askPID;
         askPID.id = 0x7DF;
 
@@ -131,6 +136,7 @@ namespace OBD2{
 
         //if we need to ask for dtc
         if (readdtc_flag){
+            Serial.println("READDTC FLAG, SENDING");
             CAN_message_t askDTC;
             askDTC.id = 0x7DF;
 
@@ -141,6 +147,7 @@ namespace OBD2{
             myCan.write(askDTC);
 
             readdtc_flag = false;
+            time_received = millis();
             return;
         } 
 
@@ -238,17 +245,17 @@ namespace OBD2{
             }
         }
         if (service == 0x43){
-            //Serial.println("handling dtc reading");
+            Serial.println("handling dtc reading");
             // print to screen
             uint16_t dtc_list[(length-2)/2];
             for (int i = 2, ii = 0; i < length; i += 2, ii++){
-                //Serial.print("i=");
-                //Serial.print(i);
-                //Serial.print(" ii=");
-                //Serial.print(ii);
+                Serial.print("i=");
+                Serial.print(i);
+                Serial.print(" ii=");
+                Serial.print(ii);
                 dtc_list[ii] = (msg[i] << 8)  + msg[i+1];
-                //Serial.print(" dtc_list[ii]=");
-                //Serial.println(dtc_list[ii]);
+                Serial.print(" dtc_list[ii]=");
+                Serial.println(dtc_list[ii]);
             }
 
             DISPLAYY::sendDTCDebugScreen(dtc_list, (length-2)/2);
@@ -283,9 +290,9 @@ namespace OBD2{
     void OBD2events(){
         // process can callbacks
         myCan.events();
-
         // restart asking if not response 
-        if (millis()-time_received > 250){
+
+        if (millis()-time_received > 10000){
             contact = false;
             #ifdef DEBUG
             Serial.println("Failed to receive response, restarting");

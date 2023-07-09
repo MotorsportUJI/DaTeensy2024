@@ -63,6 +63,7 @@ namespace BUTTONS {
     uint8_t CURRENT_SCREEN = 0;
 
     void onRedButtonPress(){
+        Serial.println("RED BUTTON");
     if (CURRENT_SCREEN == 0){
 
         OBD2::readDTC();
@@ -78,6 +79,7 @@ namespace BUTTONS {
 }
 
 void onGreenButtonPress(){
+    Serial.println("GREEN BUTTON");
     // change gear to be send
     uint8_t actual = GEAR::getDesiredGear();
     if (actual == 128){
