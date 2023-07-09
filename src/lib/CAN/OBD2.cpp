@@ -292,7 +292,7 @@ namespace OBD2{
         myCan.events();
         // restart asking if not response 
 
-        if (millis()-time_received > 10000){
+        if (millis()-time_received > 250){
             contact = false;
             #ifdef DEBUG
             Serial.println("Failed to receive response, restarting");

@@ -7,6 +7,24 @@ namespace GEAR {
   }
 
   int getGear(){
+    if (!digitalRead(0)){
+      return 0;
+    } else if (!digitalRead(1)){
+      return 5;
+    } else if (!digitalRead(2)){
+      return 3;
+    } else if (!digitalRead(3)){
+      return 4;
+    } else if (!digitalRead(4)){
+      return 1;
+    } else if (!digitalRead(5)){
+      return 6;
+    } else if (!digitalRead(6)){
+      return 2;
+    }
+
+
+
     for(int i=0; i<7; i++){
       if (!digitalRead(i)){
         return 6-i;

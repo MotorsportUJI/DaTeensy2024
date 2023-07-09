@@ -85,8 +85,8 @@ namespace DISPLAYY {
 
     void initScreen(HardwareSerial &_serial){
         ser = &_serial;
-        //ser->begin(115200);
-        ser->begin(19200);
+        ser->begin(57600);
+        //ser->begin(19200);
         void* buffer = malloc(1024);
 
         ser->addMemoryForWrite(buffer, 1024);
@@ -267,7 +267,8 @@ namespace DISPLAYY {
 
 
     void setMainScreen(){
-        ser->printf("page 1");
+        //ser->printf("page 1"); // page 1 is yet to be populated
+        ser->printf("page 2");
         endMessage();
     }
 

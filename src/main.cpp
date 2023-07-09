@@ -33,9 +33,6 @@ void setup() {
     //EmulateDashTimer.priority(255);
    // EmulateDashTimer.begin(emulateDash, 100000);
 
-    //BUTTONS::initButtons();
-
-
     DISPLAYY::initScreen(ScreenUART);
     RADIO::initRadio(RadioUART);
 
@@ -52,6 +49,9 @@ void setup() {
     BUTTONS::initButtons();
 
     pinMode(DEBUG_LED, OUTPUT);
+    delay(1000);
+    DISPLAYY::setMainScreen();
+
 }
 
 uint32_t time_engine_on = 0;
@@ -71,7 +71,7 @@ void loop() {
     BUTTONS::checkButtons();
 
     // shutdown screen if contact is off
-    if (OBD2::isContact()){
+   /* if (OBD2::isContact()){
         if (!previous_contact){
             DISPLAYY::setMainScreen();
             previous_contact = true;
@@ -83,7 +83,7 @@ void loop() {
             previous_contact = false;
             digitalWrite(DEBUG_LED, LOW);
         }
-    }
+    }*/
 
 
     if (millis() - elapsed_50ms > 50){
@@ -103,6 +103,17 @@ void loop() {
     }
     // execute each 100ms
     if (millis() - elapsed_100ms > 100){
+
+        // updateScreen
+        DISPLAYY::sendOBDdata(OBD2db);
+        DISPLAYY::sendGear(GEAR::getGear());
+
+        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
+
+        DISPLAYY::sendTimeEngineOn(time_engine_on);
+
+        DISPLAYY::sendFuelPressure(analogRead(15));
+
 
 
 
@@ -138,15 +149,7 @@ void loop() {
     }
 
     if (millis() - elapsed_200ms > 200){
-        // updateScreen
-        DISPLAYY::sendOBDdata(OBD2db);
-        DISPLAYY::sendGear(GEAR::getGear());
 
-        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
-
-        DISPLAYY::sendTimeEngineOn(time_engine_on);
-
-        DISPLAYY::sendFuelPressure(analogRead(15));
         elapsed_200ms = millis();
     }
 
