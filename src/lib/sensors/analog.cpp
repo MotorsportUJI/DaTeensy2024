@@ -47,4 +47,20 @@ namespace ANALOG
         return suspension;
     }
 
+    float sensorToBars(int pin, int minSensorValue, int maxSensorValue, float minBarValue, float maxBarValue)
+    {
+
+        // Read the sensor value
+        int sensorValue = analogRead(pin);
+
+        // Ensure the sensor value is within the valid range
+        sensorValue = constrain(sensorValue, minSensorValue, maxSensorValue);
+
+        // Map the sensor value to the corresponding bar value
+        float barValue = map(sensorValue, minSensorValue, maxSensorValue, minBarValue, maxBarValue);
+
+        // Return the bar value
+        return barValue;
+    }
+
 }

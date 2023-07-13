@@ -144,6 +144,9 @@ void loop()
         float suspension_r_r = ANALOG::readSuspension(SUSPENSION_REAR_RIGHT_PIN);
         float suspension_r_l = ANALOG::readSuspension(SUSPENSION_REAR_LEFT_PIN);
 
+        // fuel pressure
+        float fuel_pressure = ANALOG::sensorToBars(FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR);
+
         // print stuff to read rpm from yamaha CAN
         // Serial.print(getBufferRPM());
         // Serial.print("||");
