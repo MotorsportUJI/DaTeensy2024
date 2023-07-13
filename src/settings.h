@@ -39,4 +39,10 @@
 #define CS_PIN 7
 #define SO_PIN 8
 
+// suspension sensors pins
+#define SUSPENSION_FRONT_LEFT_PIN A0
+#define SUSPENSION_FRONT_RIGHT_PIN A1
+#define SUSPENSION_REAR_LEFT_PIN A2
+#define SUSPENSION_REAR_RIGHT_PIN A3
+
 #endif

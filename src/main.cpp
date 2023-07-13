@@ -138,6 +138,12 @@ void loop()
         // termopar sensor read
         float temp = max6675.readTemperature();
 
+        // read all suspensions
+        float suspension_f_r = ANALOG::readSuspension(SUSPENSION_FRONT_RIGHT_PIN);
+        float suspension_f_l = ANALOG::readSuspension(SUSPENSION_FRONT_LEFT_PIN);
+        float suspension_r_r = ANALOG::readSuspension(SUSPENSION_REAR_RIGHT_PIN);
+        float suspension_r_l = ANALOG::readSuspension(SUSPENSION_REAR_LEFT_PIN);
+
         // print stuff to read rpm from yamaha CAN
         // Serial.print(getBufferRPM());
         // Serial.print("||");
@@ -167,6 +173,16 @@ void loop()
         // add termopar data
         to_save += ",";
         to_save += String(temp);
+
+        // add suspensions data
+        to_save += ",";
+        to_save += String(suspension_f_r);
+        to_save += ",";
+        to_save += String(suspension_f_l);
+        to_save += ",";
+        to_save += String(suspension_r_r);
+        to_save += ",";
+        to_save += String(suspension_r_l);
 
         SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
