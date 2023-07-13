@@ -3,9 +3,11 @@
 
 #include <Arduino.h>
 
-namespace ANALOG {
+namespace ANALOG
+{
     float int2voltage(int value);
     float int2pressurefuel(int value);
+    float readSuspension(int pin);
 }
 
 #endif
