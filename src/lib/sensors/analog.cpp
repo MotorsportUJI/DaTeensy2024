@@ -37,9 +37,9 @@ namespace ANALOG
         float voltage = int2voltage(value);
         const float minVoltage = 0;
         const float maxVoltage = 5;
-        // cm of movment
+        // min max cm of movment
         const float minSuspension = 0;
-        const float maxSuspension = 7.2;
+        const float maxSuspension = 7;
 
         // Map the voltage to the pressure range using the map() function
         float suspension = map(int(voltage * 100), minVoltage * 100, maxVoltage * 100, minSuspension * 100, maxSuspension * 100) / 100.0;

@@ -1,5 +1,6 @@
 #include "GY-6500.h"
 #include <math.h>
+
 GY6500Sensor::GY6500Sensor(uint8_t deviceAddress, float alpha, float dt)
 {
     this->deviceAddress = deviceAddress;

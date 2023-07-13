@@ -15,7 +15,7 @@
 #include "lib/sensors/analog.h"
 
 // Gyro sensor
-#include "lib/sensors/GY-6500.cpp"
+#include "lib/sensors/GY-6500.h"
 
 // Termopar snesor
 #include "lib/sensors/max6675_sensor.h"
