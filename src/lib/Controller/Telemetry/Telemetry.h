@@ -1,10 +1,13 @@
-#pragma once
+#ifndef TELEMETRY_H
+#define TELEMETRY_H
 
 #include <Arduino.h>
 #include <CRC32.h>
+#include <HardwareSerial.h>
 
-namespace RADIO
+class TELEMETRY
 {
+public:
     typedef struct Packet
     {
         uint32_t rpm;
@@ -12,8 +15,14 @@ namespace RADIO
         uint32_t end;
     } Packet;
 
-    void initRadio(HardwareSerial &_serial);
+    TELEMETRY();
+    TELEMETRY(HardwareSerial &serial);
+    void init();
     void sendPacket(Packet packet);
     void sendData(String data);
 
-}
+private:
+    HardwareSerial *ser1;
+};
+
+#endif

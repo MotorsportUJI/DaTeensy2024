@@ -1,12 +1,19 @@
-#pragma once
+#ifndef SDSTORE_H
+#define SDSTORE_H
 
 #include <Arduino.h>
 #include <SD.h>
 #include "lib/persistence/persistance.h"
 
-namespace SDSTORE {
-
+class SDStore
+{
+public:
     void initSD();
     void saveLine(String data);
 
-}
+private:
+    String storeFile;
+    void generateFileName();
+};
+
+#endif
