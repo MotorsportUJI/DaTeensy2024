@@ -4,15 +4,15 @@
 #include "lib/CAN/OBD2.h"
 
 #include "lib/persistence/persistance.h"
-#include "lib/SD/SDstore.h"
+#include "lib/Controller/SD/SDstore.h"
 
 #include "lib/SteeringWheel/SteeringWheel.h"
-#include "lib/Radio/Radio.h"
+#include "lib/Controller/Telemetry/Telemetry.h"
+#include "lib/Controller/Sensors/Sensors.h"
+#include "lib/Controller/Data/Data.h"
 
 #include "lib/sensors/gear.h"
 #include "lib/sensors/buttons.h"
-
-#include "lib/sensors/analog.h"
 
 // Gyro sensor
 #include "lib/sensors/GY-6500.h"
@@ -22,9 +22,42 @@
 
 // Settings pin found in settings.h
 OBD2::OBD2sensordata OBD2db = {0};
-RADIO::Packet RadioPacket = {0};
+
+// Telemetry object
+TELEMETRY telemetry(TelemetryUART);
+SDStore sdstore;
+
 GY6500Sensor axis6(DEVICE_ADDRESS, ALPHA, DT);
 MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
+
+// Sensors
+Sensor FuelPressure("Presion gasolina", PRESSURE, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar");
+Sensor OilPressure("Presion aceite", PRESSURE, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar");
+
+Sensor SuspensionFrontRight("Suspension delantera derecha", SUSPENSION, SUSPENSION_FRONT_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm");
+Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENSION_FRONT_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm");
+Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, SUSPENSION_REAR_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm");
+Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION_REAR_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm");
+
+Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature());
+
+// Sensor GyroAngle("Gyro Angulo", MAPPING, axis6.getAngle(), "º");
+// Sensor GyroSpeed("Gyro Velocidad", MAPPING, axis6.getSpeed(), "º/s");
+
+// Controlador de datos
+Data dataManager(200, telemetry, sdstore);
+
+// Dash info
+uint32_t time_engine_on = 0;
+
+uint32_t elapsed_minute = 0;
+uint32_t elapsed_second = 0;
+uint32_t elapsed_200ms = 0;
+uint32_t elapsed_100ms = 0;
+uint32_t elapsed_50ms = 0;
+
+boolean previous_contact = false;
+boolean previous_fss = false;
 
 // IntervalTimer EmulateDashTimer;
 
@@ -39,14 +72,30 @@ void setup()
     // EmulateDashTimer.priority(255);
     // EmulateDashTimer.begin(emulateDash, 100000);
 
+    // Init sensors
+    FuelPressure.init();
+    OilPressure.init();
+    SuspensionFrontRight.init();
+    SuspensionFrontLeft.init();
+    SuspensionRearRight.init();
+    SuspensionRearLeft.init();
+
+    // Add sensors to data manager
+    dataManager.addSensor(&FuelPressure);
+    dataManager.addSensor(&OilPressure);
+    dataManager.addSensor(&SuspensionFrontRight);
+    dataManager.addSensor(&SuspensionFrontLeft);
+    dataManager.addSensor(&SuspensionRearRight);
+    dataManager.addSensor(&SuspensionRearLeft);
+    dataManager.addSensor(&Firewall);
+    // dataManager.addSensor(&GyroAngle);
+    // dataManager.addSensor(&GyroSpeed);
+
     DISPLAYY::initScreen(ScreenUART);
-    RADIO::initRadio(RadioUART);
 
     initOBD2(OBD2db);
-    SDSTORE::initSD();
 
     GEAR::initGear();
-    pinMode(OIL_PRESSURE_PIN, INPUT);
 
     DISPLAYY::rpmled(0);
     OBD2db.engine_rpmA = 0;
@@ -61,47 +110,15 @@ void setup()
     axis6.begin();
 }
 
-uint32_t time_engine_on = 0;
-
-uint32_t elapsed_minute = 0;
-uint32_t elapsed_second = 0;
-uint32_t elapsed_200ms = 0;
-uint32_t elapsed_100ms = 0;
-uint32_t elapsed_50ms = 0;
-
-boolean previous_contact = false;
-boolean previous_fss = false;
-
 void loop()
 {
 
     OBD2::OBD2events();
     BUTTONS::checkButtons();
 
-    // shutdown screen if contact is off
-    /* if (OBD2::isContact()){
-         if (!previous_contact){
-             DISPLAYY::setMainScreen();
-             previous_contact = true;
-             digitalWrite(DEBUG_LED, HIGH);
-         }
-     } else{
-         if (previous_contact){
-             DISPLAYY::setSplashScreen();
-             previous_contact = false;
-             digitalWrite(DEBUG_LED, LOW);
-         }
-     }*/
-
     if (millis() - elapsed_50ms > 50)
     {
 
-        // update rpm LEDS
-        // DISPLAYY::rpmledInverse(OBD2CONVERSIONS::OBD2RPM(OBD2db)/1000);
-
-        // check buttons
-        // green_button.events();
-        // red_button.events();
         BUTTONS::checkButtons();
 
         elapsed_50ms = millis();
@@ -114,7 +131,7 @@ void loop()
         DISPLAYY::sendOBDdata(OBD2db);
         DISPLAYY::sendGear(GEAR::getGear());
 
-        DISPLAYY::sendOil(digitalRead(OIL_PRESSURE_PIN));
+        DISPLAYY::sendOil(OilPressure.read());
 
         DISPLAYY::sendTimeEngineOn(time_engine_on);
 
@@ -130,64 +147,9 @@ void loop()
             OBD2::emulateDash(GEAR::getGear());
         }
 
-        // 6 axis sensor read
-        axis6.readData();
-        float angle = axis6.getAngle();
-        float speed = axis6.getSpeed();
-
-        // termopar sensor read
-        float temp = max6675.readTemperature();
-
-        // read all suspensions
-        float suspension_f_r = ANALOG::readSuspension(SUSPENSION_FRONT_RIGHT_PIN);
-        float suspension_f_l = ANALOG::readSuspension(SUSPENSION_FRONT_LEFT_PIN);
-        float suspension_r_r = ANALOG::readSuspension(SUSPENSION_REAR_RIGHT_PIN);
-        float suspension_r_l = ANALOG::readSuspension(SUSPENSION_REAR_LEFT_PIN);
-
-        // fuel pressure
-        float fuel_pressure = ANALOG::sensorToBars(FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR);
-
-        // print stuff to read rpm from yamaha CAN
-        // Serial.print(getBufferRPM());
-        // Serial.print("||");
-        // Serial.println(OBD2RPM(OBD2db));
-
         // print data to sd
-        String to_save = "";
-        to_save += millis();
-        to_save += ",";
-        to_save += OBD2toCSV(OBD2db);
-        // add gear and oil to log
-        to_save += ",";
-        to_save += String(GEAR::getGear());
-        to_save += ",";
-        to_save += String(digitalRead(OIL_PRESSURE_PIN));
+        dataManager.loop();
 
-        // add fuel pressure
-        to_save += ",";
-        to_save += String(analogRead(15));
-
-        // add 6 axis sensor data
-        to_save += ",";
-        to_save += String(angle);
-        to_save += ",";
-        to_save += String(speed);
-
-        // add termopar data
-        to_save += ",";
-        to_save += String(temp);
-
-        // add suspensions data
-        to_save += ",";
-        to_save += String(suspension_f_r);
-        to_save += ",";
-        to_save += String(suspension_f_l);
-        to_save += ",";
-        to_save += String(suspension_r_r);
-        to_save += ",";
-        to_save += String(suspension_r_l);
-
-        SDSTORE::saveLine(to_save);
         elapsed_100ms = millis();
     }
 
@@ -200,23 +162,7 @@ void loop()
     // execute each second
     if (millis() - elapsed_second > 1000)
     {
-        // update radio packet
-        // RadioPacket.rpm = OBD2RPM(OBD2db);
-
-        // send data over radio
-        // sendPacket(RadioPacket);
-
-        // printOBD2ALL(OBD2db);
-        if (OBD2db.fuel_system_status != 0)
-        {
-            time_engine_on += 1;
-        }
-        else
-        {
-            time_engine_on = 0;
-        }
-
-        elapsed_second = millis();
+        time_engine_on = (OBD2db.fuel_system_status != 0) ? time_engine_on + 1 : 0;
     }
 
     // execute each minute
