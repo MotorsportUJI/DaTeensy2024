@@ -9,16 +9,17 @@ enum SensorType
     DISTANCE,
     MAPPING,
     SUSPENSION,
-    TEMPERATURE
+    TEMPERATURE,
+    ONOFF
 };
 
 class Sensor
 {
 public:
-    Sensor(const char *name, SensorType type, int pin);
-    Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit);
-    Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit);
-    Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit);
+    Sensor(const char *name, SensorType type, int pin, const char *unit, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
 
     // inicializa los sensores conectados a la teensy y no unsn protocolos o ADC
     void init();
@@ -28,6 +29,10 @@ public:
     float readRaw();
     // devuelve el nombre del sensor y su valor con unidad
     String Sensor::readFull();
+    // devuelve el valor para el obd
+    String Sensor::getScreenValue();
+    // devuelve el tipo de sensor
+    SensorType getType();
 
 private:
     const char *name;
@@ -40,6 +45,10 @@ private:
     const char *unit;
     void (*getFunc)();
     float (*readFunc)();
+
+    // OBD
+    const char *screenID;
+    bool sendScreen;
 };
 
 #endif

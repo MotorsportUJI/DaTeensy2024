@@ -4,8 +4,9 @@
 #include "lib/Controller/Telemetry/Telemetry.h"
 #include "lib/Controller/SD/SDstore.h"
 #include "lib/Controller/Sensors/Sensors.h"
+#include "lib/CAN/OBD2.h"
 
-const int MAX_SENSORS = 20; // Máximo número de sensores que puede almacenar
+const int MAX_SENSORS = 30; // Máximo número de sensores que puede almacenar
 
 class Data
 {

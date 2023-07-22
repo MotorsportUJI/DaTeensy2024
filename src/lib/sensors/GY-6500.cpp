@@ -31,12 +31,14 @@ void GY6500Sensor::readData()
 
 float GY6500Sensor::getAngle()
 {
-    return angle;
+    readData();
+    return angle ? angle : -1;
 }
 
 float GY6500Sensor::getSpeed()
 {
-    return speed;
+    readData();
+    return speed ? speed : -1;
 }
 
 int16_t GY6500Sensor::readWord2C(uint8_t regAddress)
