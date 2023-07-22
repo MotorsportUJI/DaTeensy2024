@@ -76,7 +76,7 @@ Sensor ODBSpeed("Velocidad", MAPPING, OBD2db.vehicle_speed, "km/h", "speed", tru
 //     sendDesiredGear(GEAR::getDesiredGear());
 
 // Controlador de datos
-Data dataManager(200, telemetry, sdstore);
+Data dataManager(200, telemetry, sdstore, &display);
 
 // Dash info
 uint32_t time_engine_on = 0;

@@ -1,12 +1,13 @@
 #include "Data.h"
 
-Data::Data(unsigned long intervalValue, TELEMETRY telemetryObj, SDStore sdstoreObj)
+Data::Data::Data(unsigned long intervalValue, TELEMETRY telemetryObj, SDStore sdstoreObj, Display *displayObj)
 {
     numSensors = 0;
     previousMillis = 0;
 
     telemetry = telemetryObj;
     sdstore = sdstoreObj;
+    display = displayObj;
 
     telemetry.init();
     sdstore.initSD();
@@ -87,6 +88,12 @@ void Data::loop()
         String data = get();
         sdstore.saveLine(data);
         telemetry.sendData(data);
+
+        // foreach sensor
+        for (int i = 0; i < numSensors; i++)
+        {
+            display->sendSensorData(*sensors[i]);
+        }
 
         previousMillis = currentMillis;
     }
