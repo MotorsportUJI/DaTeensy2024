@@ -142,7 +142,6 @@ float Sensor::read()
         {
             rawValue = readFunc();
         }
-        return readFunc(); // If readFunc is not NULL, call the custom read function
     }
     else
     {
