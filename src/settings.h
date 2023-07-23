@@ -33,6 +33,9 @@
 #define ALPHA 0.98 // Weight for gyroscope data
 #define DT 0.01    // Time interval between sensor readings
 
+// ADC
+#define ADC_CS_PIN 10
+
 // Termopar sensor
 #define SCK_PIN 6 // Replace with the appropriate pin numbers
 #define CS_PIN 7

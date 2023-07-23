@@ -19,6 +19,7 @@ public:
     Sensor(const char *name, SensorType type, int pin, const char *unit, const char *screenID = NULL, bool sendScreen = false);
     Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false);
     Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false);
     Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
 
     // inicializa los sensores conectados a la teensy y no unsn protocolos o ADC
@@ -33,6 +34,8 @@ public:
     String Sensor::getScreenValue();
     // devuelve el tipo de sensor
     SensorType getType();
+    // convierte el valor segun la clase
+    float Sensor::convertValue(float value);
 
 private:
     const char *name;

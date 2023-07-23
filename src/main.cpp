@@ -10,6 +10,7 @@
 #include "lib/Controller/Telemetry/Telemetry.h"
 #include "lib/Controller/Sensors/Sensors.h"
 #include "lib/Controller/Data/Data.h"
+#include "lib/Controller/ADC/MAX11610.h"
 
 #include "lib/sensors/gear.h"
 
@@ -30,10 +31,15 @@ int CURRENT_SCREEN = 0;
 TELEMETRY telemetry(TelemetryUART);
 SDStore sdstore;
 
+// ADC object
+MAX11610 adc;
+
 GY6500Sensor axis6(DEVICE_ADDRESS, ALPHA, DT);
 MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
 
-// Sensors
+/**----------------------
+ *    Normal sensors
+ *------------------------**/
 Sensor FuelPressure("Presion gasolina", PRESSURE, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar", "fuel_p", true);
 Sensor OilPressure("Presion aceite", PRESSURE, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", "oil_p", true);
 
@@ -47,7 +53,16 @@ Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "fire
 Sensor GyroAngle("Gyro Angulo", MAPPING, axis6.getAngle(), "º", "gyro_angle", true);
 Sensor GyroSpeed("Gyro Velocidad", MAPPING, axis6.getSpeed(), "º/s", "gyro_speed", true);
 
-// gear sensor
+/**----------------------
+ *    ADC Sensors
+ *------------------------**/
+Sensor ADC1("Sensor 1", MAPPING, adc.readADC(0), "V", "adc1", true);
+// name, type, pin, min, max, min_ext, max_ext, typo_value, key, allow_to_send
+Sensor ADC2("Sensor 2 mapping value", MAPPING, adc.readADC(1), 1, 5, 0, 100, "V", "adc2", true);
+
+/**----------------------
+ *    Gear sensors
+ *------------------------**/
 Sensor Gear("Gear", MAPPING, GEAR::getGear(), "gear", "gear", true);
 
 // odb sensors
