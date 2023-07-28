@@ -10,7 +10,7 @@ Data::Data::Data(unsigned long intervalValue, TELEMETRY telemetryObj, SDStore sd
     display = displayObj;
 
     telemetry.init();
-    sdstore.initSD();
+    // sdstore.initSD();
     interval = intervalValue;
 }
 
@@ -93,7 +93,11 @@ void Data::loop()
         for (int i = 0; i < numSensors; i++)
         {
             display->sendSensorData(*sensors[i]);
+            if (debug)
+                Serial.println(sensors[i]->readFull());
         }
+        if (debug)
+            delay(1000);
 
         previousMillis = currentMillis;
     }

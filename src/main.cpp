@@ -34,8 +34,8 @@ SDStore sdstore;
 // ADC object
 MAX11610 adc;
 
-GY6500Sensor axis6(DEVICE_ADDRESS, ALPHA, DT);
-MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
+// GY6500Sensor axis6(DEVICE_ADDRESS, ALPHA, DT);
+// MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
 
 /**----------------------
  *    Normal sensors
@@ -48,10 +48,10 @@ Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENS
 Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, SUSPENSION_REAR_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "susp_r_r", true);
 Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION_REAR_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "sus_r_l", true);
 
-Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
+// Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
 
-Sensor GyroAngle("Gyro Angulo", MAPPING, axis6.getAngle(), "º", "gyro_angle", true);
-Sensor GyroSpeed("Gyro Velocidad", MAPPING, axis6.getSpeed(), "º/s", "gyro_speed", true);
+// Sensor GyroAngle("Gyro Angulo", MAPPING, axis6.getAngle(), "º", "gyro_angle", true);
+// Sensor GyroSpeed("Gyro Velocidad", MAPPING, axis6.getSpeed(), "º/s", "gyro_speed", true);
 
 /**----------------------
  *    ADC Sensors
@@ -114,10 +114,14 @@ boolean previous_fss = false;
 void setup()
 {
 
-// init serial
-#ifdef DEBUG
+    // init serial
     Serial.begin(115200);
-#endif
+    while (!Serial)
+    {
+        ; // wait for serial port to connect. Needed for native USB port only
+    }
+
+    Serial.println("Starting...");
 
     // EmulateDashTimer.priority(255);
     // EmulateDashTimer.begin(emulateDash, 100000);
@@ -143,9 +147,9 @@ void setup()
     dataManager.addSensor(&SuspensionFrontLeft);
     dataManager.addSensor(&SuspensionRearRight);
     dataManager.addSensor(&SuspensionRearLeft);
-    dataManager.addSensor(&Firewall);
-    dataManager.addSensor(&GyroAngle);
-    dataManager.addSensor(&GyroSpeed);
+    // dataManager.addSensor(&Firewall);
+    // dataManager.addSensor(&GyroAngle);
+    // dataManager.addSensor(&GyroSpeed);
     dataManager.addSensor(&Gear);
 
     // OBD2 sensors data manager
@@ -165,11 +169,20 @@ void setup()
     dataManager.addSensor(&ODBAbsPressure);
     dataManager.addSensor(&ODBDTCCount);
 
+    /**--------------------------------------------
+     *               Init OBD2
+     *---------------------------------------------**/
     initOBD2(OBD2db);
 
+    /**--------------------------------------------
+     *               Init GEAR
+     *---------------------------------------------**/
     GEAR::initGear();
-    // Pasa el puntero display
 
+    /**--------------------------------------------
+     *               Init display
+     *---------------------------------------------**/
+    display.init();
     display.rpmled(0);
     display.setMainScreen();
 
@@ -179,9 +192,14 @@ void setup()
     pinMode(DEBUG_LED, OUTPUT);
     delay(1000);
 
-    axis6.begin();
+    /**--------------------------------------------
+     *               Init Gravitational sensor
+     *---------------------------------------------**/
+    // axis6.begin();
 
-    // button init
+    /**--------------------------------------------
+     *               Init buttons
+     *---------------------------------------------**/
     pinMode(GREEN_BUTTON, INPUT_PULLUP);
     pinMode(RED_BUTTON, INPUT_PULLUP);
 }
@@ -245,7 +263,7 @@ void loop()
             {
 
                 OBD2::readDTC();
-                display.setDebugScreen();
+                display.setSplashScreen();
                 CURRENT_SCREEN = 1;
             }
             else if (CURRENT_SCREEN == 1)
@@ -253,11 +271,17 @@ void loop()
                 display.setSensorScreen();
                 CURRENT_SCREEN = 2;
             }
-            else
+            else if (CURRENT_SCREEN == 2)
             {
                 display.setMainScreen();
+                CURRENT_SCREEN = 3;
+            }
+            else if (CURRENT_SCREEN == 3)
+            {
+                display.setDebugScreen();
                 CURRENT_SCREEN = 0;
             }
+            Serial.println("Pantalla: " + String(CURRENT_SCREEN));
         }
         else
         {

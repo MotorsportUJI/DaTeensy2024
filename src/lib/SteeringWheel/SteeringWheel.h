@@ -13,6 +13,7 @@ class Display
 public:
     Display(HardwareSerial &_serial); // Constructor
 
+    void init();
     void rpmled(int nleds);
     void rpmledInverse(int nleds);
 
@@ -33,5 +34,5 @@ public:
 
 private:
     int ledCount; // Número de LEDs (variable privada)
-    // Aquí puedes agregar otros atributos privados necesarios para la clase
+    HardwareSerial *serialScreen;
 };

@@ -1,8 +1,8 @@
 #ifndef SETTINGS
 #define SETTINGS
 
-#define ScreenUART Serial7
-#define TelemetryUART Serial5
+#define ScreenUART Serial8
+#define TelemetryUART Serial7
 
 #define EEPROM_time_base_address 0
 #define EEPROM_fss_base_address 4

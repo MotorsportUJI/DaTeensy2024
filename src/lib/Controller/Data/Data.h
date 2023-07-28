@@ -25,6 +25,8 @@ public:
     // Do something in iteration
     void loop();
 
+    boolean debug = false;
+
 private:
     TELEMETRY telemetry;
     SDStore sdstore;

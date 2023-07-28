@@ -16,7 +16,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, con
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
-        this->screenID = new char[strlen(screenID) + 1];
+        this->screenID = screenID;
         this->sendScreen = sendScreen;
     }
     else
@@ -40,7 +40,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max,
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
-        this->screenID = new char[strlen(screenID) + 1];
+        this->screenID = screenID;
         this->sendScreen = sendScreen;
     }
     else
@@ -64,7 +64,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const cha
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
-        this->screenID = new char[strlen(screenID) + 1];
+        this->screenID = screenID;
         this->sendScreen = sendScreen;
     }
     else
@@ -88,7 +88,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
-        this->screenID = new char[strlen(screenID) + 1];
+        this->screenID = screenID;
         this->sendScreen = sendScreen;
     }
     else
@@ -170,7 +170,7 @@ String Sensor::readFull()
 {
     String data;
     float value = Sensor::read();
-    data = String(value) + " " + String(unit);
+    data = String(name) + ": " + String(value) + " " + String(unit);
 
     return data;
 }
