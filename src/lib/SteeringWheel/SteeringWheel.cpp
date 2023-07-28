@@ -3,13 +3,18 @@ HardwareSerial *ser;
 
 Display::Display(HardwareSerial &_serial)
 {
-    ser = &_serial;
-    ser->begin(57600);
-    // ser->begin(19200);
+    this->serialScreen = &_serial;
+}
+
+void Display::init()
+{
+    this->serialScreen->begin(57600);
+    // serialScreen->begin(19200);
     void *buffer = malloc(1024);
 
-    ser->addMemoryForWrite(buffer, 1024);
-    // ser->print("bauds=921600");
+    this->serialScreen->addMemoryForWrite(buffer, 1024);
+
+    // this->serialScreen->print("bauds=921600");
 }
 
 void Display::rpmled(int nleds)
@@ -97,7 +102,7 @@ void Display::endMessage()
     byte a = 0xff;
     for (int i = 0; i < 3; i++)
     {
-        ser->write(a);
+        this->serialScreen->write(a);
     }
 }
 
@@ -107,13 +112,13 @@ void Display::sendGear(int str, bool desired = false)
 
     if (str == 255)
     {
-        ser->printf("%s%s%s", "gear", (desired ? "" : "2"), ".txt =\"E\"");
-        endMessage();
+        this->serialScreen->printf("%s%s%s", "gear", (desired ? "" : "2"), ".txt =\"E\"");
+        Display::endMessage();
         return;
     }
 
-    ser->printf("%s%s%s", "gear", (desired ? "" : "2"), ".txt =\"E\"");
-    endMessage();
+    this->serialScreen->printf("%s%s%s", "gear", (desired ? "" : "2"), ".txt =\"E\"");
+    Display::endMessage();
 }
 
 void Display::sendFuelSystemStatus(int sta)
@@ -152,8 +157,8 @@ void Display::sendFuelSystemStatus(int sta)
     }
 
     // Serial.printf("fss.txt=\"%s\"\n",tosend);
-    ser->printf("fss.txt=\"%s\"", tosend);
-    endMessage();
+    this->serialScreen->printf("fss.txt=\"%s\"", tosend);
+    Display::endMessage();
 }
 
 void Display::sendTimeEngineOn(uint32_t str)
@@ -161,8 +166,8 @@ void Display::sendTimeEngineOn(uint32_t str)
     uint32_t hours = str / 3600;
     uint32_t minutes = (str - hours * 3600) / 60;
     uint32_t seconds = (str - hours * 3600 - minutes * 60);
-    ser->printf("time.txt=\"%d:%d:%d\"", hours, minutes, seconds);
-    endMessage();
+    this->serialScreen->printf("time.txt=\"%d:%d:%d\"", hours, minutes, seconds);
+    Display::endMessage();
 }
 
 #define __disable_irq() __asm__ volatile("CPSID i" :: \
@@ -172,7 +177,10 @@ void Display::sendTimeEngineOn(uint32_t str)
 
 void Display::sendSensorData(Sensor &sensor)
 {
-    ser->print(sensor.getScreenValue());
+
+    this->serialScreen->printf(sensor.getScreenValue().c_str());
+    Serial.println(sensor.getScreenValue().c_str());
+    Display::endMessage();
 }
 
 /**----------------------
@@ -181,25 +189,25 @@ void Display::sendSensorData(Sensor &sensor)
 
 void Display::setMainScreen()
 {
-    // ser->printf("page 1"); // page 1 is yet to be populated
-    ser->printf("page 2");
-    endMessage();
+    // this->serialScreen->printf("page 1"); // page 1 is yet to be populated
+    this->serialScreen->printf("page 1");
+    Display::endMessage();
 }
 
 void Display::setSensorScreen()
 {
-    ser->printf("page 2");
-    endMessage();
+    this->serialScreen->printf("page 2");
+    Display::endMessage();
 }
 
 void Display::setSplashScreen()
 {
-    ser->printf("page 0");
-    endMessage();
+    this->serialScreen->printf("page 0");
+    Display::endMessage();
 }
 
 void Display::setDebugScreen()
 {
-    ser->printf("page 3");
-    endMessage();
+    this->serialScreen->printf("page 3");
+    Display::endMessage();
 }
