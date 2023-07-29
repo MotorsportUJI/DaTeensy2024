@@ -306,7 +306,7 @@ namespace OBD2
         {
             contact = false;
 #ifdef DEBUG
-            Serial.println("Failed to receive response, restarting");
+            Serial.println("Failed to receive response from OBD, restarting");
 #endif
 
             askPID(MONITOR_STATUS_SINCE_DTCS_CLEARED);
