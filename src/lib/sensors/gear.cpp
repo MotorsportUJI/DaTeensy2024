@@ -9,7 +9,7 @@ namespace GEAR
     }
   }
 
-  int getGear()
+  float getGear()
   {
     if (!digitalRead(0))
     {

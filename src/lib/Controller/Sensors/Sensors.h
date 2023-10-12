@@ -10,17 +10,18 @@ enum SensorType
     MAPPING,
     SUSPENSION,
     TEMPERATURE,
-    ONOFF
+    ONOFF,
+    VALUE
 };
 
 class Sensor
 {
 public:
-    Sensor(const char *name, SensorType type, int pin, const char *unit, const char *screenID = NULL, bool sendScreen = false);
-    Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false);
-    Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
-    Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false);
-    Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, int pin, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false);
+    Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false);
 
     // inicializa los sensores conectados a la teensy y no unsn protocolos o ADC
     void init();
@@ -36,6 +37,7 @@ public:
     SensorType getType();
     // convierte el valor segun la clase
     float Sensor::convertValue(float value);
+    int Sensor::getIntRawValue();
 
 private:
     const char *name;
@@ -48,6 +50,7 @@ private:
     const char *unit;
     void (*getFunc)();
     float (*readFunc)();
+    bool haveDecimal = false;
 
     // OBD
     const char *screenID;

@@ -531,4 +531,125 @@ namespace OBD2
         myCan.write(dashGear);
         myCan.write(dashButtons);
     }
+
+    /**
+     *  @brief  Get the value of a sensor from the OBD2 database
+     *
+     * 1: MIL_ON, 2: DTC_CNT, 3: fuel_system_status, 4: Calculated_Engine_load, 5: Engine_coolant_temperature,
+     * 6: long_term_fuel_trim, 7: intake_manifold_absolute_pressure, 8: RPM,
+     * 9: Speed, 10: timing_advance, 11: intake_air_temperature, 12: throttle_position,
+     * 13: oxygen_sensor_voltage, 14: oxygen_sensor_long_term_fuel_trim, 15: distance_traveled_MIL_on,
+     * 16: absolute_barometric_presure, 17: control_module_voltage, 18: relavite_throttle_position,
+     * 19: time_run_with_mil_on
+     *
+     *
+     * @param sensor the id of the sensor
+     * @return float
+     */
+
+    float getMIL()
+    {
+        return (_db->MIL_on) ? 1 : 0;
+    }
+
+    float getDTC()
+    {
+        return _db->DTC_CNT;
+    }
+
+    float getFuelSys()
+    {
+        return _db->fuel_system_status;
+    }
+
+    float getEngineLoad()
+    {
+        return _db->Calculated_Engine_load / 2.55;
+    }
+
+    float getEngineCoolantTemp()
+    {
+        float(_db->Engine_coolant_temperature) - 40.0;
+    }
+
+    float getLongTermFuelTrim()
+    {
+        return float(_db->long_term_fuel_trim) / 1.28 - 100;
+    }
+
+    float getIntakeManifoldAbsPressure()
+    {
+        return _db->intake_manifold_absolute_pressure;
+    }
+
+    float getRPM()
+    {
+        return (_db->engine_rpmA * 256 + _db->engine_rpmB) / 4.0;
+    }
+
+    float getSpeed()
+    {
+        return _db->vehicle_speed;
+    }
+
+    float getTimingAdvance()
+    {
+        return _db->timing_advance / 2.0 - 64;
+    }
+
+    float getAirIntakeTemp()
+    {
+        return float(_db->intake_air_temperature) - 40.0;
+    }
+
+    float getThrottlePosition()
+    {
+        return _db->throttle_position / 2.55;
+    }
+
+    float getOxygenSensor1()
+    {
+        return _db->oxygen_sensor_voltage / 200.0;
+    }
+
+    float getDistanceTraveledMIL()
+    {
+        return 256 * _db->distance_traveled_MIL_on_A + _db->control_module_voltage_B;
+    }
+
+    float getBarometricPressure()
+    {
+        return _db->absolute_barometric_presure;
+    }
+
+    float getControlModuleVoltage()
+    {
+        return (256 * _db->control_module_voltage_A + _db->control_module_voltage_B) / 1000.0;
+    }
+
+    float getRelativeThrottlePosition()
+    {
+        return _db->relavite_throttle_position / 2.55;
+    }
+
+    float getTimeRunWithMIL()
+    {
+        return 256 * _db->time_run_with_mil_on_A + _db->time_run_with_mil_on_B;
+    }
+
+    float getOxygenSensorVoltage()
+    {
+        return _db->oxygen_sensor_voltage / 200.0;
+    }
+
+    float getOxygenSensorFuelTrim()
+    {
+        return _db->oxygen_sensor_long_term_fuel_trim / 1.28 - 100;
+    }
+
+    float getObdTPS()
+    {
+        return _db->throttle_position / 2.55;
+    }
+
 }

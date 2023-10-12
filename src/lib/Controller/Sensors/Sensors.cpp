@@ -1,6 +1,6 @@
 #include "Sensors.h"
 
-Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false)
 {
     this->name = name;
     this->type = type;
@@ -12,6 +12,8 @@ Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, con
     this->unit = unit;
     this->readFunc = NULL; // Initialize readFunc as NULL
     this->getFunc = NULL;  // Initialize getFunc as NULL
+    this->haveDecimal = decimal;
+    this->haveDecimal = decimal;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -25,7 +27,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, con
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false)
 {
     this->name = name;
     this->type = type;
@@ -37,6 +39,8 @@ Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max,
     this->unit = unit;
     this->readFunc = NULL; // Initialize readFunc as NULL
     this->getFunc = NULL;  // Initialize getFunc as NULL
+    this->haveDecimal = decimal;
+
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
@@ -49,7 +53,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max,
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false)
 {
     this->name = name;
     this->type = type;
@@ -61,6 +65,8 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const cha
     this->unit = unit;
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = NULL;      // Initialize getFunc as NULL
+    this->haveDecimal = decimal;
+
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
@@ -73,7 +79,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const cha
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false)
 {
     this->name = name;
     this->type = type;
@@ -85,6 +91,8 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min
     this->unit = unit;
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = NULL;      // Initialize getFunc as NULL
+    this->haveDecimal = decimal;
+
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
     {
@@ -97,7 +105,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, bool decimal = false, const char *screenID = NULL, bool sendScreen = false)
 {
     this->name = name;
     this->type = type;
@@ -109,6 +117,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*ge
     this->unit = unit;
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = getFunc;   // Assign the custom get function
+    this->haveDecimal = decimal;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -129,25 +138,8 @@ void Sensor::init()
 
 float Sensor::read()
 {
-    int rawValue;
 
-    if (readFunc)
-    {
-        if (getFunc)
-        {
-            getFunc();
-        }
-        // si es tipo maping devolver el valor mapeado
-        if (type == SensorType::MAPPING)
-        {
-            rawValue = readFunc();
-        }
-    }
-    else
-    {
-        rawValue = analogRead(pin);
-    }
-    return convertValue(rawValue);
+    return convertValue(readRaw());
 }
 
 float Sensor::readRaw()
@@ -169,8 +161,8 @@ float Sensor::readRaw()
 String Sensor::readFull()
 {
     String data;
-    float value = Sensor::read();
-    data = String(name) + ": " + String(value) + " " + String(unit);
+    String value = (haveDecimal) ? String(Sensor::read(), 2) : String(Sensor::getIntRawValue());
+    data = String(name) + ": " + value + " " + String(unit);
 
     return data;
 }
@@ -183,8 +175,8 @@ String Sensor::getScreenValue()
         return NULL;
     }
 
-    float value = Sensor::read();
-    data = String(value);
+    // check if is decimal
+    data = (haveDecimal) ? String(Sensor::read(), 2) : String(Sensor::getIntRawValue());
 
     // construct the string to send to the screen
     data = String(screenID) + ".txt=\"" + data + "\"";
@@ -203,6 +195,7 @@ float Sensor::convertValue(float value)
     {
         value = map(value, min, max, convertedMin, convertedMax);
     }
+
     else if (type == SensorType::ONOFF)
     {
         if (value == 1 || value == true || value != 0 || value != false)
@@ -216,4 +209,9 @@ float Sensor::convertValue(float value)
     }
 
     return value;
+}
+
+int Sensor::getIntRawValue()
+{
+    return (int)readRaw();
 }

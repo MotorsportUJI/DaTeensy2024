@@ -40,13 +40,13 @@ MAX11610 adc;
 /**----------------------
  *    Normal sensors
  *------------------------**/
-Sensor FuelPressure("Presion gasolina", PRESSURE, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar", "fuel_p", true);
-Sensor OilPressure("Presion aceite", PRESSURE, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", "oil_p", true);
+Sensor FuelPressure("Presion gasolina", PRESSURE, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar", false, "fuel_p", true);
+Sensor OilPressure("Presion aceite", PRESSURE, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", false, "oil_p", true);
 
-Sensor SuspensionFrontRight("Suspension delantera derecha", SUSPENSION, SUSPENSION_FRONT_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "susp_f_r", true);
-Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENSION_FRONT_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "susp_f_l", true);
-Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, SUSPENSION_REAR_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "susp_r_r", true);
-Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION_REAR_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", "sus_r_l", true);
+Sensor SuspensionFrontRight("Suspension delantera derecha", SUSPENSION, SUSPENSION_FRONT_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, "susp_f_r", true);
+Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENSION_FRONT_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, "susp_f_l", true);
+Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, SUSPENSION_REAR_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, "susp_r_r", true);
+Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION_REAR_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, "sus_r_l", true);
 
 // Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
 
@@ -56,37 +56,37 @@ Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION
 /**----------------------
  *    ADC Sensors
  *------------------------**/
-Sensor ADC1("Sensor 1", MAPPING, adc.readADC(0), "V", "adc1", true);
+Sensor ADC1("Sensor 1", VALUE, adc.readADC(0), "V", false, "adc1", true);
 // name, type, pin, min, max, min_ext, max_ext, typo_value, key, allow_to_send
-Sensor ADC2("Sensor 2 mapping value", MAPPING, adc.readADC(1), 1, 5, 0, 100, "V", "adc2", true);
+Sensor ADC2("Sensor 2 mapping value", MAPPING, adc.readADC(1), 1, 5, 0, 100, "V", false, "adc2", true);
 
 /**----------------------
  *    Gear sensors
  *------------------------**/
-Sensor Gear("Gear", MAPPING, GEAR::getGear(), "gear", "gear", true);
+Sensor Gear("Gear", VALUE, GEAR::getGear, "gear", false, "gear", true);
 
 // odb sensors
 
-Sensor ODBRpm("RPM", MAPPING, OBD2CONVERSIONS::OBD2RPM(OBD2db), "RPM", "rpm", true);
-Sensor ODBCoolantTemp("Temperatura refrigerante", MAPPING, OBD2CONVERSIONS::OBD2TMP(OBD2db.Engine_coolant_temperature), "ºC", "watertemp", true);
-Sensor ODBAirTemp("Temperatura aire", MAPPING, OBD2CONVERSIONS::OBD2TMP(OBD2db.intake_air_temperature), "ºC", "airtemp", true);
-Sensor ODBThrottle("Acelerador", MAPPING, OBD2CONVERSIONS::OBD2PC(OBD2db.throttle_position), "%", "throttle", true);
-Sensor ODBThrottleRel("Acelerador relativo", MAPPING, OBD2CONVERSIONS::OBD2PC(OBD2db.relavite_throttle_position), "%", "throttlerel", true);
+Sensor ODBRpm("RPM", VALUE, OBD2::getRPM, "RPM", false, "rpm", true);
+Sensor ODBCoolantTemp("Temperatura refrigerante", VALUE, OBD2::getEngineCoolantTemp, "ºC", false, "watertemp", true);
+Sensor ODBAirTemp("Temperatura aire", VALUE, OBD2::getAirIntakeTemp, "ºC", false, "airtemp", true);
+Sensor ODBThrottle("Acelerador", VALUE, OBD2::getObdTPS, "%", true, "throttle", true);
+Sensor ODBThrottleRel("Acelerador relativo", VALUE, OBD2::getRelativeThrottlePosition, "%", true, "throttlerel", true);
 
-Sensor ODBAbsPressure("Presion absoluta", MAPPING, OBD2db.absolute_barometric_presure, "kPa", "abspressure", true);
-Sensor ODBIntakePressure("Presion admision", MAPPING, OBD2db.intake_manifold_absolute_pressure, "kPa", "presIntake", true);
-Sensor ODBDTCCount("DTC", MAPPING, OBD2db.DTC_CNT, "DTC", "dtc", true);
+Sensor ODBAbsPressure("Presion absoluta", VALUE, OBD2::getBarometricPressure, "kPa", false, "abspressure", true);
+Sensor ODBIntakePressure("Presion admision", VALUE, OBD2::getIntakeManifoldAbsPressure, "kPa", false, "presIntake", true);
+Sensor ODBDTCCount("DTC", VALUE, OBD2::getDTC, "DTC", false, "dtc", true);
 
-Sensor ODBVoltage("Voltaje", MAPPING, OBD2CONVERSIONS::OBD2Volt(OBD2db), "V", "voltage", true);
-Sensor ODBEngineLoad("Carga motor", MAPPING, OBD2CONVERSIONS::OBD2PC(OBD2db.Calculated_Engine_load), "%", "engineload", true);
+Sensor ODBVoltage("Voltaje", VALUE, OBD2::getControlModuleVoltage, "V", true, "voltage", true);
+Sensor ODBEngineLoad("Carga motor", VALUE, OBD2::getEngineLoad, "%", true, "engineload", true);
 // sendFuelSystemStatus(OBD2db.fuel_system_status);
 
-Sensor ODBTrim("Trim", MAPPING, OBD2CONVERSIONS::OBD2Trim(OBD2db.long_term_fuel_trim), "%", "FT", true);
-Sensor ODB02Trim("Trim O2", MAPPING, OBD2CONVERSIONS::OBD2Trim(OBD2db.oxygen_sensor_long_term_fuel_trim), "%", "O2trim", true);
-Sensor ODB02Volt("Voltaje O2", MAPPING, OBD2CONVERSIONS::OBD2VoltO2(OBD2db.oxygen_sensor_voltage), "V", "O2v", true);
+Sensor ODBTrim("Trim", VALUE, OBD2::getLongTermFuelTrim, "%", true, "FT", true);
+Sensor ODB02Trim("Trim O2", VALUE, OBD2::getOxygenSensorFuelTrim, "%", true, "O2trim", true);
+Sensor ODB02Volt("Voltaje O2", VALUE, OBD2::getOxygenSensorVoltage, "V", true, "O2v", true);
 
-Sensor ODBTimingAdvance("Avance", MAPPING, OBD2CONVERSIONS::OBD2Advance(OBD2db.timing_advance), "º", "Tadv", true);
-Sensor ODBSpeed("Velocidad", MAPPING, OBD2db.vehicle_speed, "km/h", "speed", true);
+Sensor ODBTimingAdvance("Avance", VALUE, OBD2::getTimingAdvance, "º", false, "Tadv", true);
+Sensor ODBSpeed("Velocidad", VALUE, OBD2::getSpeed, "km/h", false, "speed", true);
 
 //     sendDesiredGear(GEAR::getDesiredGear());
 
@@ -116,7 +116,6 @@ void setup()
 
     // init serial
     Serial.begin(115200);
-    
 
     Serial.println("Starting...");
 
@@ -199,6 +198,8 @@ void setup()
      *---------------------------------------------**/
     pinMode(GREEN_BUTTON, INPUT_PULLUP);
     pinMode(RED_BUTTON, INPUT_PULLUP);
+
+    display.setSensorScreen();
 }
 
 void loop()
@@ -206,6 +207,11 @@ void loop()
 
     OBD2::OBD2events();
 
+    Serial.print(ODBThrottle.readRaw());
+    Serial.print(" | ");
+    Serial.print(ODBThrottle.readFull());
+    Serial.print(" | ");
+    Serial.println(OBD2::getObdTPS());
     /**----------------------
      *    check buttons  long or short press
      *------------------------**/
