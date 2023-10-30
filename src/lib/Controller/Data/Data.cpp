@@ -44,6 +44,30 @@ String Data::get()
     return dataStr;
 }
 
+String Data::getTelemetry()
+{
+    String dataStr = "";
+
+    for (int i = 0; i < numSensors; i++)
+    {
+        if (sensors[i]->sendTelemrtry == true)
+        {
+            String value = sensors[i]->read();
+            dataStr += value;
+            if (i < numSensors - 1)
+            {
+                dataStr += ", ";
+            }
+        }
+    }
+    // check if the last character is a comma
+    if (dataStr[dataStr.length() - 1] == ',')
+    {
+        dataStr.remove(dataStr.length() - 1);
+    }
+    return dataStr;
+}
+
 String Data::getRaw()
 {
     String dataStr = "";
@@ -85,7 +109,8 @@ void Data::loop()
     if (currentMillis - previousMillis >= interval)
     {
 
-        String data = get();
+        String data = getTelemetry();
+        Serial.println(data);
         // sdstore.saveLine(data);
         telemetry.sendData(data);
 
