@@ -3,13 +3,13 @@
 
 #include <Arduino.h>
 
-namespace GEAR {
+namespace GEAR
+{
     void initGear();
-    int getGear();
+    float getGear();
 
     uint8_t getDesiredGear(); // desired gear = 128 to clone real gear
     void setDesiredGear(uint8_t gear);
 }
-
 
 #endif

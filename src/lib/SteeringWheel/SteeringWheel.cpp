@@ -179,6 +179,7 @@ void Display::sendSensorData(Sensor &sensor)
 {
 
     this->serialScreen->printf(sensor.getScreenValue().c_str());
+    // Serial.println(sensor.getScreenValue().c_str());
     Display::endMessage();
 }
 

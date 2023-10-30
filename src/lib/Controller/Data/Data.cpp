@@ -33,8 +33,8 @@ String Data::get()
 
     for (int i = 0; i < numSensors; i++)
     {
-        float value = sensors[i]->read();
-        dataStr += String(value);
+        String value = sensors[i]->read();
+        dataStr += value;
         if (i < numSensors - 1)
         {
             dataStr += ", ";
@@ -50,7 +50,7 @@ String Data::getRaw()
 
     for (int i = 0; i < numSensors; i++)
     {
-        float value = sensors[i]->readRaw();
+        String value = sensors[i]->readRaw();
         dataStr += String(value);
         if (i < numSensors - 1)
         {
@@ -86,7 +86,7 @@ void Data::loop()
     {
 
         String data = get();
-        sdstore.saveLine(data);
+        // sdstore.saveLine(data);
         telemetry.sendData(data);
 
         // foreach sensor
@@ -94,11 +94,20 @@ void Data::loop()
         {
             display->sendSensorData(*sensors[i]);
             if (debug)
-                Serial.println(sensors[i]->readFull());
+            {
+                Serial.print((String) "[" + i + "]" + sensors[i]->getName() + "\t");
+                if (i % 5 == 0)
+                {
+                    Serial.println();
+                }
+            }
         }
         if (debug)
-            delay(1000);
+        {
 
+            // Serial.println(data + "\n\n");
+            delay(1000);
+        }
         previousMillis = currentMillis;
     }
 }
