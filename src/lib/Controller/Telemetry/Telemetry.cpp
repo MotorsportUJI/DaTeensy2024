@@ -1,6 +1,6 @@
 #include "Telemetry.h"
 
-TELEMETRY::TELEMETRY() { ser1 = &Serial5; }
+TELEMETRY::TELEMETRY() { ser1 = &Serial7; }
 TELEMETRY::TELEMETRY(HardwareSerial &serial) : ser1(&serial) {}
 
 void TELEMETRY::init()

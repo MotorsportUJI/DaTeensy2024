@@ -15,7 +15,7 @@
 #include "lib/sensors/gear.h"
 
 // Gyro sensor
-#include "lib/sensors/GY-6500.h"
+#include "lib/sensors/GYRO.h"
 
 // Termopar snesor
 #include "lib/sensors/max6675_sensor.h"
@@ -34,7 +34,7 @@ SDStore sdstore;
 // ADC object
 MAX11610 adc;
 
-// GY6500Sensor axis6(DEVICE_ADDRESS, ALPHA, DT);
+GYRO axis6;
 // MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
 
 /**----------------------
@@ -50,13 +50,23 @@ Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION
 
 // Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
 
-// Sensor GyroAngle("Gyro Angulo", MAPPING, axis6.getAngle(), "º", "gyro_angle", true);
-// Sensor GyroSpeed("Gyro Velocidad", MAPPING, axis6.getSpeed(), "º/s", "gyro_speed", true);
+// float g1()
+// {
+//     return axis6.getPitch();
+// }
+// float g2()
+// {
+//     return axis6.getYaw();
+// }
+
+// Sensor GyroAngle("Gyro Angulo", VALUE, g1, "º", false, "gyro_angle", true);
+// Sensor GyroSpeed("Gyro Velocidad", VALUE, g2, "º/s", false, "gyro_speed", true);
 
 /**----------------------
  *    ADC Sensors
  *------------------------**/
 Sensor ADC1("Sensor 1", VALUE, adc.readADC(0), "V", false, "adc1", true);
+
 // name, type, pin, min, max, min_ext, max_ext, typo_value, key, allow_to_send
 Sensor ADC2("Sensor 2 mapping value", MAPPING, adc.readADC(1), 1, 5, 0, 100, "V", false, "adc2", true);
 
@@ -91,7 +101,7 @@ Sensor ODBSpeed("Velocidad", VALUE, OBD2::getSpeed, "km/h", false, "speed", true
 //     sendDesiredGear(GEAR::getDesiredGear());
 
 // Controlador de datos
-Data dataManager(200, telemetry, sdstore, &display);
+Data dataManager(100, telemetry, sdstore, &display);
 
 // Dash info
 uint32_t time_engine_on = 0;
@@ -131,6 +141,7 @@ void setup()
     SuspensionFrontLeft.init();
     SuspensionRearRight.init();
     SuspensionRearLeft.init();
+    axis6.begin();
 
     /**--------------------------------------------
      *               Initi data logger
@@ -151,12 +162,12 @@ void setup()
     // OBD2 sensors data manager
     dataManager.addSensor(&ODBRpm);
     dataManager.addSensor(&ODBCoolantTemp);
-    dataManager.addSensor(&ODBAirTemp);
+    dataManager.addSensor(&ODBAirTemp); // no need
     dataManager.addSensor(&ODBThrottle);
     dataManager.addSensor(&ODBThrottleRel);
     dataManager.addSensor(&ODBIntakePressure);
-    dataManager.addSensor(&ODBTrim);
-    dataManager.addSensor(&ODB02Trim);
+    dataManager.addSensor(&ODBTrim);   // no
+    dataManager.addSensor(&ODB02Trim); // no
     dataManager.addSensor(&ODB02Volt);
     dataManager.addSensor(&ODBVoltage);
     dataManager.addSensor(&ODBEngineLoad);
@@ -206,12 +217,19 @@ void loop()
 {
 
     OBD2::OBD2events();
+    axis6.loop();
+    // Serial.print(axis6.getYaw());
+    // Serial.print(" | ");
+    // Serial.print(axis6.getPitch());
+    // Serial.print(" | ");
+    // Serial.print(axis6.getRoll());
+    // Serial.print(" | | |  ");
+    // Serial.print(axis6.getAccelX());
+    // Serial.print(" | ");
+    // Serial.print(axis6.getAccelY());
+    // Serial.print(" | ");
+    // Serial.println(axis6.getAccelZ());
 
-    Serial.print(ODBThrottle.readRaw());
-    Serial.print(" | ");
-    Serial.print(ODBThrottle.readFull());
-    Serial.print(" | ");
-    Serial.println(OBD2::getObdTPS());
     /**----------------------
      *    check buttons  long or short press
      *------------------------**/

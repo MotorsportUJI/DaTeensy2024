@@ -94,11 +94,20 @@ void Data::loop()
         {
             display->sendSensorData(*sensors[i]);
             if (debug)
-                Serial.println(sensors[i]->getScreenValue());
+            {
+                Serial.print((String) "[" + i + "]" + sensors[i]->getName() + "\t");
+                if (i % 5 == 0)
+                {
+                    Serial.println();
+                }
+            }
         }
         if (debug)
-            delay(1000);
+        {
 
+            // Serial.println(data + "\n\n");
+            delay(1000);
+        }
         previousMillis = currentMillis;
     }
 }

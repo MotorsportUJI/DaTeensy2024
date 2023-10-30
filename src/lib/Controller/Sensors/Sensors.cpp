@@ -215,3 +215,8 @@ int Sensor::getIntRawValue()
 {
     return (int)readRaw();
 }
+
+const char *Sensor::getName()
+{
+    return this->name;
+}

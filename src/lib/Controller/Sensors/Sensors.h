@@ -34,7 +34,9 @@ public:
     // devuelve el valor para el obd
     String Sensor::getScreenValue();
     // devuelve el tipo de sensor
-    SensorType getType();
+    SensorType Sensor::getType();
+    // devuelve el nombre del sensor
+    const char *Sensor::getName();
     // convierte el valor segun la clase
     float Sensor::convertValue(float value);
     int Sensor::getIntRawValue();
