@@ -18,6 +18,8 @@ public:
     void addSensor(Sensor *sensor);
     // Get all data from all sensors
     String get();
+    // Get the data to send via telemetry
+    String getTelemetry();
     // Get raw data from all sensors
     String getRaw();
     // Get converted with extension
