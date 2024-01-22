@@ -569,7 +569,7 @@ namespace OBD2
 
     float getEngineCoolantTemp()
     {
-        float(_db->Engine_coolant_temperature) - 40.0;
+        return float(_db->Engine_coolant_temperature) - 40.0;
     }
 
     float getLongTermFuelTrim()

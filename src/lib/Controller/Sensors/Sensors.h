@@ -30,17 +30,17 @@ public:
     // lee el sensor y devuelve el valor sin convertir
     float readRaw();
     // devuelve el nombre del sensor y su valor con unidad
-    String Sensor::readFull();
+    String readFull();
     // devuelve el valor para el obd
-    String Sensor::getScreenValue();
+    String getScreenValue();
     // devuelve el tipo de sensor
-    SensorType Sensor::getType();
+    SensorType getType();
     // devuelve el nombre del sensor
-    const char *Sensor::getName();
+    const char *getName();
     // convierte el valor segun la clase
-    float Sensor::convertValue(float value);
-    int Sensor::getIntRawValue();
-    bool sendTelemrtry;
+    float convertValue(float value);
+    int getIntRawValue();
+    bool sendTelemetry;
 
 private:
     const char *name;

@@ -1,6 +1,6 @@
 #include "Sensors.h"
 
-Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, bool decimal = false, bool sendTelemrtry = false, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, bool decimal, bool sendTelemetry, const char *screenID, bool sendScreen )
 {
     this->name = name;
     this->type = type;
@@ -14,7 +14,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, boo
     this->getFunc = NULL;  // Initialize getFunc as NULL
     this->haveDecimal = decimal;
     this->haveDecimal = decimal;
-    this->sendTelemrtry = sendTelemrtry;
+    this->sendTelemetry = sendTelemetry;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -28,7 +28,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, const char *unit, boo
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, bool sendTelemetry = false, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal, bool sendTelemetry, const char *screenID, bool sendScreen)
 {
     this->name = name;
     this->type = type;
@@ -41,7 +41,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max,
     this->readFunc = NULL; // Initialize readFunc as NULL
     this->getFunc = NULL;  // Initialize getFunc as NULL
     this->haveDecimal = decimal;
-    this->sendTelemrtry = sendTelemrtry;
+    this->sendTelemetry = sendTelemetry;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -55,7 +55,7 @@ Sensor::Sensor(const char *name, SensorType type, int pin, float min, float max,
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, bool decimal = false, bool sendTelemrtry = false, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const char *unit, bool decimal, bool sendTelemetry, const char *screenID, bool sendScreen)
 {
     this->name = name;
     this->type = type;
@@ -68,7 +68,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const cha
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = NULL;      // Initialize getFunc as NULL
     this->haveDecimal = decimal;
-    this->sendTelemrtry = sendTelemrtry;
+    this->sendTelemetry = sendTelemetry;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -82,7 +82,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), const cha
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal = false, bool sendTelemrtry = false, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min, float max, float convertedMin, float convertedMax, const char *unit, bool decimal, bool sendTelemetry, const char *screenID, bool sendScreen)
 {
     this->name = name;
     this->type = type;
@@ -95,7 +95,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = NULL;      // Initialize getFunc as NULL
     this->haveDecimal = decimal;
-    this->sendTelemrtry = sendTelemrtry;
+    this->sendTelemetry = sendTelemetry;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -109,7 +109,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), float min
     }
 }
 
-Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, bool decimal = false, bool sendTelemrtry = false, const char *screenID = NULL, bool sendScreen = false)
+Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*getFunc)(), const char *unit, bool decimal , bool sendTelemetry, const char *screenID, bool sendScreen)
 {
     this->name = name;
     this->type = type;
@@ -122,7 +122,7 @@ Sensor::Sensor(const char *name, SensorType type, float (*readFunc)(), void (*ge
     this->readFunc = readFunc; // Assign the custom read function
     this->getFunc = getFunc;   // Assign the custom get function
     this->haveDecimal = decimal;
-    this->sendTelemrtry = sendTelemrtry;
+    this->sendTelemetry = sendTelemetry;
 
     // If screenID is not NULL, copy the string to the screenID attribute
     if (screenID)
@@ -177,7 +177,7 @@ String Sensor::getScreenValue()
     String data;
     if (!sendScreen)
     {
-        return NULL;
+        return "";
     }
 
     // check if is decimal

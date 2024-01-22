@@ -74,6 +74,21 @@ float GYRO::getAccelZ()
     return data.accelZ;
 }
 
+float GYRO::getMagX()
+{
+    return data.magX;
+}
+
+float GYRO::getMagY()
+{
+    return data.magY;
+}
+
+float GYRO::getMagZ()
+{
+    return data.magZ;
+}
+
 /* Comandos
 
 bool setup(const uint8_t addr, const MPU9250Setting& setting, WireType& w = Wire);

@@ -2,7 +2,7 @@
 #define SETTINGS
 
 #define ScreenUART Serial8
-#define TelemetryUART Serial7
+#define TelemetryUART Serial5
 
 #define EEPROM_time_base_address 0
 #define EEPROM_fss_base_address 4
@@ -26,8 +26,8 @@
 #define GYRO_XOUT_H 0x43
 
 // Sensor configuration
-#define ACCEL_CONFIG 0x08 // Set accelerometer range to +/- 4g
-#define GYRO_CONFIG 0x18  // Set gyroscope range to +/- 2000 degrees/s
+// #define ACCEL_CONFIG 0x08 // Set accelerometer range to +/- 4g
+// #define GYRO_CONFIG 0x18  // Set gyroscope range to +/- 2000 degrees/s
 
 // Complementary filter constants
 #define ALPHA 0.98 // Weight for gyroscope data
