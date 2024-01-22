@@ -1,4 +1,4 @@
-#include "SteeringWheel.h"
+#include "Screen.h"
 HardwareSerial *ser;
 
 Display::Display(HardwareSerial &_serial)
@@ -107,7 +107,7 @@ void Display::endMessage()
 }
 
 // FIXME: En el cambio de gear, se debe enviar el valor de gear anterior, salvo que se quede en 255 por mas de 1 segundo
-void Display::sendGear(int str, bool desired = false)
+void Display::sendGear(int str, bool desired)
 {
 
     if (str == 255)
@@ -142,7 +142,7 @@ void Display::sendFuelSystemStatus(int sta)
     }
     else if (sta == 4)
     {
-        char yeah[] = "OPEN LOOP\\rDUE TO\\rfuel cut decel";
+        char yeah[] = "OPEN LOOP\\rDUE \\rfuel ct decel";
         strcpy(tosend, yeah);
     }
     else if (sta == 8)

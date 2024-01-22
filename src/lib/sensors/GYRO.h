@@ -30,6 +30,9 @@ public:
     float getAccelX();
     float getAccelY();
     float getAccelZ();
+    float getMagX();
+    float getMagY();
+    float getMagZ();
 
 private:
     GYROData data;

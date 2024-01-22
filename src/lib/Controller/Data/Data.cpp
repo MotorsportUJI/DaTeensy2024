@@ -1,17 +1,30 @@
 #include "Data.h"
 
-Data::Data::Data(unsigned long intervalValue, TELEMETRY telemetryObj, SDStore sdstoreObj, Display *displayObj)
-{
+Data::Data(unsigned long intervalValue, HardwareSerial &telemetryUART,  Display *displayObj)
+{   
+    // Creamos el objeto teleemtria
+    TELEMETRY telemetryTemp(telemetryUART);
+
+    // Creamos el objeto SD
+    SDStore tempSD;
+
+
     numSensors = 0;
     previousMillis = 0;
 
-    telemetry = telemetryObj;
-    sdstore = sdstoreObj;
+    // guardamos en el objeto DATA los objetos Telemetry, SDStore y pantalla
+    telemetry = telemetryTemp;
+    sdstore = tempSD;
     display = displayObj;
-
-    telemetry.init();
-    // sdstore.initSD();
+    
+    // guardamos el intervalo de tiempo para enviar datos
     interval = intervalValue;
+}
+
+void Data::init()
+{
+    // sdstore.initSD();
+    telemetry.init();
 }
 
 void Data::addSensor(Sensor *sensor)
@@ -50,7 +63,7 @@ String Data::getTelemetry()
 
     for (int i = 0; i < numSensors; i++)
     {
-        if (sensors[i]->sendTelemrtry == true)
+        if (sensors[i]->sendTelemetry == true)
         {
             String value = sensors[i]->read();
             dataStr += value;

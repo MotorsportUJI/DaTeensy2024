@@ -8,6 +8,7 @@ class MAX11610
 {
 public:
     MAX11610();
+    void init(uint8_t address);
     uint16_t readADC(uint8_t channel);
 
 private:

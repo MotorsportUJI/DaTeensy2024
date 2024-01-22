@@ -2,8 +2,12 @@
 
 MAX11610::MAX11610()
 {
-  // Initialize with default I2C slave address
-  _address = 0x68;
+  _address = 0x34;
+}
+
+void MAX11610::init(uint8_t address)
+{ 
+  _address = address;
   Wire.begin();
 }
 
