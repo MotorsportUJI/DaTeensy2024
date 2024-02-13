@@ -13,30 +13,31 @@ class Data
 {
 public:
     // Constructor;
-    Data(unsigned long intervalValue, HardwareSerial &telemetryUART,  Display *displayObj);
+    Data(unsigned long intervalValue, HardwareSerial &telemetryUART, Display *displayObj);
 
-    //init
-    void init();    
+    // init
+    void init();
 
     // Add sensor to logger or data collector
     void addSensor(Sensor *sensor);
-    
+
     // Get all data from all sensors
     String get();
-    
+
     // Get the data to send via telemetry
     String getTelemetry();
-    
+
     // Get raw data from all sensors
     String getRaw();
-    
+
     // Get converted with extension
     String getFull();
-    
+
     // Do something in iteration
     void loop();
 
     boolean debug = false;
+    boolean debugTelemetry = false;
 
 private:
     TELEMETRY telemetry;
