@@ -1,6 +1,6 @@
 #include "Telemetry.h"
 
-TELEMETRY::TELEMETRY() { ser1 = &Serial5; }
+TELEMETRY::TELEMETRY() { ser1 = &Serial7; }
 
 // FIXME: Not working with serial from settings.h
 TELEMETRY::TELEMETRY(HardwareSerial &_serial)

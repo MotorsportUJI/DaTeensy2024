@@ -36,8 +36,8 @@ MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
 /**----------------------
  *    Normal sensors
  *------------------------**/
-Sensor FuelPressure("Presion gasolina", PRESSURE, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar", false, false, "fuel_p", true);
-Sensor OilPressure("Presion aceite", PRESSURE, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", false, false, "oil_p", true);
+Sensor FuelPressure("Presion gasolina", MAPPING, FUEL_PRESSURE_PIN, FUEL_PRESSURE_MIN, FUEL_PRESSURE_MAX, FUEL_PRESSURE_MIN_BAR, FUEL_PRESSURE_MAX_BAR, "bar", false, true, "fuel_p", true);
+Sensor OilPressure("Presion aceite", MAPPING, OIL_PRESSURE_PIN, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", false, false, "oil_p", true);
 
 Sensor SuspensionFrontRight("Suspension delantera derecha", SUSPENSION, SUSPENSION_FRONT_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_f_r", true);
 Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENSION_FRONT_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_f_l", true);
@@ -88,15 +88,15 @@ Sensor Gear("Gear", VALUE, GEAR::getGear, "gear", false, true, "gear", true);
 
 Sensor ODBRpm("RPM", VALUE, OBD2::getRPM, "RPM", false, true, "rpm", true);
 Sensor ODBCoolantTemp("Temperatura refrigerante", VALUE, OBD2::getEngineCoolantTemp, "ºC", false, true, "watertemp", true);
-Sensor ODBAirTemp("Temperatura aire", VALUE, OBD2::getAirIntakeTemp, "ºC", false, false, "airtemp", true);
-Sensor ODBThrottle("Acelerador", VALUE, OBD2::getObdTPS, "%", true, false, "throttle", true);
-Sensor ODBThrottleRel("Acelerador relativo", VALUE, OBD2::getRelativeThrottlePosition, "%", true, true, "throttlerel", true);
+Sensor ODBAirTemp("Temperatura aire", VALUE, OBD2::getAirIntakeTemp, "ºC", false, true, "airtemp", true);
+Sensor ODBThrottle("TPS abs", VALUE, OBD2::getObdTPS, "%", true, true, "throttle", true);
+Sensor ODBThrottleRel("TPS rel", VALUE, OBD2::getRelativeThrottlePosition, "%", true, true, "throttlerel", true);
 
 Sensor ODBAbsPressure("Presion absoluta", VALUE, OBD2::getBarometricPressure, "kPa", false, false, "abspressure", true);
-Sensor ODBIntakePressure("Presion admision", VALUE, OBD2::getIntakeManifoldAbsPressure, "kPa", false, false, "presIntake", true);
+Sensor ODBIntakePressure("Presion admision", VALUE, OBD2::getIntakeManifoldAbsPressure, "kPa", false, true, "presIntake", true);
 Sensor ODBDTCCount("DTC", VALUE, OBD2::getDTC, "DTC", false, false, "dtc", true);
 
-Sensor ODBVoltage("Voltaje", VALUE, OBD2::getControlModuleVoltage, "V", true, false, "voltage", true);
+Sensor ODBVoltage("Voltaje", VALUE, OBD2::getControlModuleVoltage, "V", true, true, "voltage", true);
 Sensor ODBEngineLoad("Carga motor", VALUE, OBD2::getEngineLoad, "%", true, false, "engineload", true);
 // sendFuelSystemStatus(OBD2db.fuel_system_status);
 
@@ -111,6 +111,7 @@ Sensor ODBSpeed("Velocidad", VALUE, OBD2::getSpeed, "km/h", false, false, "speed
 
 // Controlador de datos
 Data dataManager(100, TelemetryUART, &display);
+
 
 // Dash info
 uint32_t time_engine_on = 0;
@@ -166,7 +167,7 @@ void setup()
     SuspensionFrontLeft.init();
     SuspensionRearRight.init();
     SuspensionRearLeft.init();
-    // axis6.begin();
+    axis6.begin();
 
     /**--------------------------------------------
      *               Initi data logger
@@ -179,7 +180,7 @@ void setup()
     dataManager.addSensor(&SuspensionFrontLeft);
     dataManager.addSensor(&SuspensionRearRight);
     dataManager.addSensor(&SuspensionRearLeft);
-    // dataManager.addSensor(&Gear);
+    dataManager.addSensor(&Gear);
 
     /**----------------------
      *    GYRO sensors
@@ -245,7 +246,7 @@ void setup()
     pinMode(GREEN_BUTTON, INPUT_PULLUP);
     pinMode(RED_BUTTON, INPUT_PULLUP);
 
-    // display.setSensorScreen();
+    display.setSensorScreen();
 }
 
 void loop()

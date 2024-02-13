@@ -2,7 +2,7 @@
 #define SETTINGS
 
 #define ScreenUART Serial8
-#define TelemetryUART Serial5
+#define TelemetryUART Serial7
 
 #define EEPROM_time_base_address 0
 #define EEPROM_fss_base_address 4
@@ -53,11 +53,11 @@
 #define MAX_SUSPENSION_MM 70
 
 // Fuel preasure sensor
-#define FUEL_PRESSURE_PIN A4
+#define FUEL_PRESSURE_PIN 15
 #define FUEL_PRESSURE_MIN 0
 #define FUEL_PRESSURE_MAX 1023
 #define FUEL_PRESSURE_MIN_BAR 0
-#define FUEL_PRESSURE_MAX_BAR 10
+#define FUEL_PRESSURE_MAX_BAR 13
 
 // Oil preasure sensor
 #define OIL_PRESSURE_PIN A5

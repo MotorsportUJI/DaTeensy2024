@@ -23,7 +23,7 @@ Data::Data(unsigned long intervalValue, HardwareSerial &telemetryUART,  Display 
 
 void Data::init()
 {
-    // sdstore.initSD();
+    sdstore.initSD();
     telemetry.init();
 }
 
@@ -71,6 +71,16 @@ String Data::getTelemetry()
             {
                 dataStr += ", ";
             }
+
+            if (debugTelemetry)
+            {
+                Serial.print((String) "[" + i + "]" + sensors[i]->getName() + "\t");
+                if (i % 5 == 0)
+                {
+                    Serial.println();
+                }
+            }
+
         }
     }
     // check if the last character is a comma
@@ -124,7 +134,7 @@ void Data::loop()
 
         String data = getTelemetry();
         Serial.println(data);
-        // sdstore.saveLine(data);
+        sdstore.saveLine(data);
         telemetry.sendData(data);
 
         // foreach sensor
@@ -148,4 +158,5 @@ void Data::loop()
         }
         previousMillis = currentMillis;
     }
+
 }
