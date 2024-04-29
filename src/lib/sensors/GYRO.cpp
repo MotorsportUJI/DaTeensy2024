@@ -26,7 +26,6 @@ void GYRO::begin() // Give I2C address and start sensorv 0x68, config
         Serial.println("BNO08x: Found!!");
 #endif
     }
-    Wire.setClock(400000); // Increase I2C clock speed to 400kHz
     setReports();
     calibrate();
 }
@@ -53,14 +52,7 @@ void GYRO::loop() // Get values from gyroscope
             data.accelZ = myIMU.getAccelZ();
             updated = true;
         }
-        // GYRO
-        else if (myIMU.getSensorEventID() == SENSOR_REPORTID_GYROSCOPE_CALIBRATED)
-        { // rads / sec
-            data.gyroX = myIMU.getGyroX();
-            data.gyroY = myIMU.getGyroY();
-            data.gyroZ = myIMU.getGyroZ();
-            updated = true;
-        }
+
         // Euler
         else if (myIMU.getSensorEventID() == SENSOR_REPORTID_ROTATION_VECTOR)
         { // quaternion -> degree
@@ -158,19 +150,7 @@ void GYRO::setReports(void)
 #ifdef GYRO_H_DEBUG
     Serial.println("BNO08x: Setting desired reports...");
 #endif
-    if (myIMU.enableGyro())
-    {
-#ifdef GYRO_H_DEBUG
-        Serial.println("Gyro enabled");
-        Serial.println("Output in form x, y, z in radians per second");
-#endif
-    }
-    else
-    {
-#ifdef GYRO_H_DEBUG
-        Serial.println("Could not enable gyro");
-#endif
-    }
+   
 
     if (myIMU.enableAccelerometer())
     {
@@ -186,7 +166,7 @@ void GYRO::setReports(void)
 #endif
     }
 
-    if (myIMU.enableRotationVector(100))
+    if (myIMU.enableRotationVector())
     {
 #ifdef GYRO_H_DEBUG
         Serial.println(F("Rotation vector enabled"));
@@ -210,12 +190,7 @@ void GYRO::printDataDebug()
     Serial.print(", ");
     Serial.println(data.accelZ);
 
-    Serial.print("Gyro: ");
-    Serial.print(data.gyroX);
-    Serial.print(", ");
-    Serial.print(data.gyroY);
-    Serial.print(", ");
-    Serial.println(data.gyroZ);
+
 
     Serial.print("Euler: ");
     Serial.print(data.roll);
