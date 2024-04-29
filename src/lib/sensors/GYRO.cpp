@@ -34,6 +34,17 @@ void GYRO::loop() // Get values from gyroscope
 {
     bool updated = false;
 
+    // if last update was over 500 ms, reset
+    if (millis() - lastUpdate > 500)
+    {
+        #ifdef GYRO_H_DEBUG
+                Serial.println("BNO08x: Resetting sensor...");
+        #endif
+        myIMU.hardwareReset();
+        setReports();
+        lastUpdate = millis();
+    }
+
     if (myIMU.wasReset())
     {
 #ifdef GYRO_H_DEBUG

@@ -9,7 +9,7 @@
  * -------------------------
  */
 
-#define GYRO_H_DEBUG
+// #define GYRO_H_DEBUG
 
 // For the most reliable interaction with the SHTP bus, we need
 // to use hardware reset control, and to monitor the H_INT pin.
