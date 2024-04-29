@@ -10,9 +10,10 @@ void GYRO::begin() // Give I2C address and start sensorv 0x68, config
 {
     Wire.begin();
 
-    if (myIMU.begin() == false)
-    { // Setup without INT/RST control (Not Recommended)
-      // if (myIMU.begin(BNO08X_ADDR, Wire, BNO08X_INT, BNO08X_RST) == false){
+    // if (myIMU.begin() == false){
+    // Setup without INT/RST control (Not Recommended)
+    if (myIMU.begin(BNO08X_ADDR, Wire, BNO08X_INT, BNO08X_RST) == false)
+    {
 #ifdef GYRO_H_DEBUG
         Serial.println("BNO08x: BNO08x not detected at default I2C address. Check your jumpers on the hookup guide. Freezing...");
 #endif
@@ -25,19 +26,22 @@ void GYRO::begin() // Give I2C address and start sensorv 0x68, config
         Serial.println("BNO08x: Found!!");
 #endif
     }
+    Wire.setClock(400000); // Increase I2C clock speed to 400kHz
     setReports();
+    calibrate();
 }
 
 void GYRO::loop() // Get values from gyroscope
 {
     bool updated = false;
-    //     if (myIMU.wasReset())
-    //     {
-    // #ifdef GYRO_H_DEBUG
-    //         Serial.println("BNO08x: Sensor was reset");
-    // #endif
-    //         setReports();
-    //     }
+
+    if (myIMU.wasReset())
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("BNO08x: Sensor was reset");
+#endif
+        setReports();
+    }
 
     if (myIMU.getSensorEvent() == true)
     {
@@ -75,6 +79,37 @@ void GYRO::loop() // Get values from gyroscope
         printDataDebug();
 #endif
     }
+}
+
+void GYRO::calibrate()
+{
+    Serial.print("Calibrando BNO...  ");
+    if (myIMU.clearTare())
+    {
+        Serial.print("[Clear Tare]...  ");
+    }
+    else
+    {
+        Serial.print("[Clear Tare]... ");
+    }
+    if (myIMU.tareNow())
+    {
+        Serial.print("[TareXYZ]...  ");
+    }
+    else
+    {
+        Serial.print("[TareXYZ]... ");
+    }
+    if (myIMU.saveTare())
+    {
+        Serial.print("[Save Tare]...  ");
+    }
+    else
+    {
+        Serial.print("[Save Tare]... ");
+    }
+
+    Serial.println("OK");
 }
 
 float GYRO::getAccelX()
@@ -151,7 +186,7 @@ void GYRO::setReports(void)
 #endif
     }
 
-    if (myIMU.enableRotationVector())
+    if (myIMU.enableRotationVector(100))
     {
 #ifdef GYRO_H_DEBUG
         Serial.println(F("Rotation vector enabled"));
@@ -188,6 +223,7 @@ void GYRO::printDataDebug()
     Serial.print(data.pitch);
     Serial.print(", ");
     Serial.println(data.yaw);
+    // delay(50);
 }
 
 /* Comandos anterior gyro (MPU)

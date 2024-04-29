@@ -7,7 +7,7 @@
 #include "lib/CAN/OBD2.h"
 #include "lib/Screen/Screen.h"
 
-const int MAX_SENSORS = 30; // Máximo número de sensores que puede almacenar
+const int MAX_SENSORS = 35; // Máximo número de sensores que puede almacenar
 
 class Data
 {

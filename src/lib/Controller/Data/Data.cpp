@@ -1,13 +1,12 @@
 #include "Data.h"
 
-Data::Data(unsigned long intervalValue, HardwareSerial &telemetryUART,  Display *displayObj)
-{   
+Data::Data(unsigned long intervalValue, HardwareSerial &telemetryUART, Display *displayObj)
+{
     // Creamos el objeto teleemtria
     TELEMETRY telemetryTemp(telemetryUART);
 
     // Creamos el objeto SD
     SDStore tempSD;
-
 
     numSensors = 0;
     previousMillis = 0;
@@ -16,7 +15,7 @@ Data::Data(unsigned long intervalValue, HardwareSerial &telemetryUART,  Display 
     telemetry = telemetryTemp;
     sdstore = tempSD;
     display = displayObj;
-    
+
     // guardamos el intervalo de tiempo para enviar datos
     interval = intervalValue;
 }
@@ -80,7 +79,6 @@ String Data::getTelemetry()
                     Serial.println();
                 }
             }
-
         }
     }
     // check if the last character is a comma
@@ -133,7 +131,7 @@ void Data::loop()
     {
 
         String data = getTelemetry();
-        Serial.println(data);
+        // Serial.println(data);
         sdstore.saveLine(data);
         telemetry.sendData(data);
 
@@ -158,5 +156,4 @@ void Data::loop()
         }
         previousMillis = currentMillis;
     }
-
 }

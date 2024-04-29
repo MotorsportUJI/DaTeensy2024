@@ -8,6 +8,7 @@
  * FOR DEBUGGING PURPOSES :)
  * -------------------------
  */
+
 #define GYRO_H_DEBUG
 
 // For the most reliable interaction with the SHTP bus, we need
@@ -16,9 +17,9 @@
 // Note, these can be other GPIO if you like.
 // Define as -1 to disable these features.
 // #define BNO08X_INT A4
-#define BNO08X_INT -1
+#define BNO08X_INT 23
 // #define BNO08X_RST A5
-#define BNO08X_RST -1
+#define BNO08X_RST 22
 
 #define BNO08X_ADDR 0x4B // SparkFun BNO08x Breakout (Qwiic) defaults to 0x4B (we use 0x68)
 // #define BNO08X_ADDR 0x4A // Alternate address if ADR jumper is closed
@@ -43,6 +44,7 @@ public:
 
     void begin();
     void loop();
+    void calibrate();
 
     // Acererometer
     float getAccelX();
