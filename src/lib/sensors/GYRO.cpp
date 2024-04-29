@@ -4,59 +4,77 @@
 GYRO::GYRO()
 {
 }
-MPU9250 mpu; // You can also use MPU9255 as is
+BNO08x myIMU;
 
-void GYRO::begin()
+void GYRO::begin() // Give I2C address and start sensorv 0x68, config
 {
     Wire.begin();
-    delay(1500);
-    for (int i = 0; i < 3; i++)
+
+    if (myIMU.begin() == false)
+    { // Setup without INT/RST control (Not Recommended)
+      // if (myIMU.begin(BNO08X_ADDR, Wire, BNO08X_INT, BNO08X_RST) == false){
+#ifdef GYRO_H_DEBUG
+        Serial.println("BNO08x: BNO08x not detected at default I2C address. Check your jumpers on the hookup guide. Freezing...");
+#endif
+        while (1)
+            ;
+    }
+    else
     {
-        if (!mpu.setup(0x68))
-        { // change to your own address
-            Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
-            delay(5000);
+#ifdef GYRO_H_DEBUG
+        Serial.println("BNO08x: Found!!");
+#endif
+    }
+    setReports();
+}
+
+void GYRO::loop() // Get values from gyroscope
+{
+    bool updated = false;
+    //     if (myIMU.wasReset())
+    //     {
+    // #ifdef GYRO_H_DEBUG
+    //         Serial.println("BNO08x: Sensor was reset");
+    // #endif
+    //         setReports();
+    //     }
+
+    if (myIMU.getSensorEvent() == true)
+    {
+        // Accel
+        if (myIMU.getSensorEventID() == SENSOR_REPORTID_ACCELEROMETER)
+        { // m / s2
+            data.accelX = myIMU.getAccelX();
+            data.accelY = myIMU.getAccelY();
+            data.accelZ = myIMU.getAccelZ();
+            updated = true;
         }
-        else
+        // GYRO
+        else if (myIMU.getSensorEventID() == SENSOR_REPORTID_GYROSCOPE_CALIBRATED)
+        { // rads / sec
+            data.gyroX = myIMU.getGyroX();
+            data.gyroY = myIMU.getGyroY();
+            data.gyroZ = myIMU.getGyroZ();
+            updated = true;
+        }
+        // Euler
+        else if (myIMU.getSensorEventID() == SENSOR_REPORTID_ROTATION_VECTOR)
+        { // quaternion -> degree
+            data.roll = (myIMU.getRoll()) * 180.0 / PI;
+            data.pitch = (myIMU.getPitch()) * 180.0 / PI;
+            data.yaw = (myIMU.getYaw()) * 180.0 / PI;
+            updated = true;
+        }
+
+        if (updated)
         {
-            break;
+            lastUpdate = millis();
         }
+
+#ifdef GYRO_H_DEBUG
+        printDataDebug();
+#endif
     }
-}
-
-void GYRO::loop()
-{
-    if (mpu.update())
-    {
-        // if (millis() > lastUpdate + 25)
-        // {
-        data.yaw = mpu.getYaw();
-        data.pitch = mpu.getPitch();
-        data.roll = mpu.getRoll();
-        data.accelX = mpu.getAccX();
-        data.accelY = mpu.getAccY();
-        data.accelZ = mpu.getAccZ();
-        data.magX = mpu.getMagX();
-        data.magY = mpu.getMagY();
-        data.magZ = mpu.getMagZ();
-        lastUpdate = millis();
-        // }
-    }
-}
-
-float GYRO::getYaw()
-{
-    return data.yaw;
-}
-
-float GYRO::getPitch()
-{
-    return data.pitch;
-}
-
-float GYRO::getRoll()
-{
-    return data.roll;
 }
 
 float GYRO::getAccelX()
@@ -74,22 +92,105 @@ float GYRO::getAccelZ()
     return data.accelZ;
 }
 
-float GYRO::getMagX()
+float GYRO::getGyroX()
 {
-    return data.magX;
+    return data.gyroX;
+}
+float GYRO::getGyroY()
+{
+    return data.gyroY;
+}
+float GYRO::getGyroZ()
+{
+    return data.gyroZ;
 }
 
-float GYRO::getMagY()
+float GYRO::getYaw()
 {
-    return data.magY;
+    return data.yaw;
+}
+float GYRO::getPitch()
+{
+    return data.pitch;
+}
+float GYRO::getRoll()
+{
+    return data.roll;
 }
 
-float GYRO::getMagZ()
+void GYRO::setReports(void)
 {
-    return data.magZ;
+#ifdef GYRO_H_DEBUG
+    Serial.println("BNO08x: Setting desired reports...");
+#endif
+    if (myIMU.enableGyro())
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("Gyro enabled");
+        Serial.println("Output in form x, y, z in radians per second");
+#endif
+    }
+    else
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("Could not enable gyro");
+#endif
+    }
+
+    if (myIMU.enableAccelerometer())
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("Accelerometer enabled");
+        Serial.println("Output in form x, y, z in m/s^2");
+#endif
+    }
+    else
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("Could not enable accelerometer");
+#endif
+    }
+
+    if (myIMU.enableRotationVector())
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println(F("Rotation vector enabled"));
+        Serial.println(F("Output in form roll, pitch, yaw"));
+#endif
+    }
+    else
+    {
+#ifdef GYRO_H_DEBUG
+        Serial.println("Could not enable rotation vector");
+#endif
+    }
 }
 
-/* Comandos
+void GYRO::printDataDebug()
+{
+    Serial.print("Accel: ");
+    Serial.print(data.accelX);
+    Serial.print(", ");
+    Serial.print(data.accelY);
+    Serial.print(", ");
+    Serial.println(data.accelZ);
+
+    Serial.print("Gyro: ");
+    Serial.print(data.gyroX);
+    Serial.print(", ");
+    Serial.print(data.gyroY);
+    Serial.print(", ");
+    Serial.println(data.gyroZ);
+
+    Serial.print("Euler: ");
+    Serial.print(data.roll);
+    Serial.print(", ");
+    Serial.print(data.pitch);
+    Serial.print(", ");
+    Serial.println(data.yaw);
+}
+
+/* Comandos anterior gyro (MPU)
 
 bool setup(const uint8_t addr, const MPU9250Setting& setting, WireType& w = Wire);
 void verbose(const bool b);

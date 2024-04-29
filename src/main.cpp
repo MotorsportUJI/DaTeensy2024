@@ -25,12 +25,10 @@ OBD2::OBD2sensordata OBD2db = {0};
 Display display(ScreenUART);
 int CURRENT_SCREEN = 0;
 
-
-
 // ADC object
 // MAX11610 adc;
 
-GYRO axis6;
+GYRO bnoGyro;
 MAX6675Sensor max6675(SCK_PIN, CS_PIN, SO_PIN);
 
 /**----------------------
@@ -47,26 +45,26 @@ Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION
 Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
 /**----------------------
  *    ENCAPSULATED GYRO SENSOR FUNCTIONS
- ------------------------*/
-float getax() { return axis6.getAccelX(); }
-float getay() { return axis6.getAccelY(); }
-float getaz() { return axis6.getAccelZ(); }
-float getYaw() { return axis6.getYaw(); }
-float getPitch() { return axis6.getPitch(); }
-float getRoll() { return axis6.getRoll(); }
-float getmagx() { return axis6.getMagX(); }
-float getmagy() { return axis6.getMagY(); }
-float getmagz() { return axis6.getMagZ(); }
+------------------------*/
+float getax() { return bnoGyro.getAccelX(); }
+float getay() { return bnoGyro.getAccelY(); }
+float getaz() { return bnoGyro.getAccelZ(); }
+float getYaw() { return bnoGyro.getYaw(); }
+float getPitch() { return bnoGyro.getPitch(); }
+float getRoll() { return bnoGyro.getRoll(); }
+float getGyroX() { return bnoGyro.getGyroX(); }
+float getGyroY() { return bnoGyro.getGyroY(); }
+float getGyroZ() { return bnoGyro.getGyroZ(); }
 
-Sensor GyroAccelX("Gyro AccelX", VALUE, getax, "º", true, true, "gyro_angle", true);
-Sensor GyroAccelY("Gyro AccelY", VALUE, getay, "º/s", true, true, "gyro_speed", true);
-Sensor GyroAccelZ("Gyro AccelZ", VALUE, getaz, "m/s2", true, true, "gyro_accel", true);
-Sensor GyroYaw("Gyro Yaw", VALUE, getYaw, "º", true, true, "gyro_yaw", true);
-Sensor GyroPitch("Gyro Pitch", VALUE, getPitch, "º", true, true, "gyro_pitch", true);
-Sensor GyroRoll("Gyro Roll", VALUE, getRoll, "º", true, true, "gyro_roll", true);
-Sensor GyroMagX("Gyro MagX", VALUE, getmagx, "º", true, true, "gyro_magx", true);
-Sensor GyroMagY("Gyro MagY", VALUE, getmagy, "º", true, true, "gyro_magy", true);
-Sensor GyroMagZ("Gyro MagZ", VALUE, getmagz, "º", true, true, "gyro_magz", true);
+Sensor BNOAccelX("Gyro AccelX", VALUE, getax, "m/s2", true, true, "accel_x", true);
+Sensor BNOAccelY("Gyro AccelY", VALUE, getay, "m/s2", true, true, "accel_y", true);
+Sensor BNOAccelZ("Gyro AccelZ", VALUE, getaz, "m/s2", true, true, "accel_z", true);
+Sensor BNOYaw("Gyro Yaw", VALUE, getYaw, "º", true, true, "gyro_yaw", true);
+Sensor BNOPitch("Gyro Pitch", VALUE, getPitch, "º", true, true, "gyro_pitch", true);
+Sensor BNORoll("Gyro Roll", VALUE, getRoll, "º", true, true, "gyro_roll", true);
+Sensor BNOGyroX("Gyro X", VALUE, getGyroX, "rad/s", true, true, "gyro_angle_x", true);
+Sensor BNOGyroY("Gyro Y", VALUE, getGyroY, "rad/s", true, true, "gyro_angle_y", true);
+Sensor BNOGyroZ("Gyro Z", VALUE, getGyroZ, "rad/s", true, true, "gyro_angle_z", true);
 
 /**----------------------
  *    ADC Sensors
@@ -80,7 +78,6 @@ Sensor GyroMagZ("Gyro MagZ", VALUE, getmagz, "º", true, true, "gyro_magz", true
  *    Gear sensors
  *------------------------**/
 Sensor Gear("Gear", VALUE, GEAR::getGear, "gear", false, true, "gear", true);
-
 
 /**----------------------
  *    ODB Sensors
@@ -111,7 +108,6 @@ Sensor ODBSpeed("Velocidad", VALUE, OBD2::getSpeed, "km/h", false, false, "speed
 
 // Controlador de datos
 Data dataManager(100, TelemetryUART, &display);
-
 
 // Dash info
 uint32_t time_engine_on = 0;
@@ -148,15 +144,13 @@ void setup()
     EmulateDashTimer.priority(255);
     EmulateDashTimer.begin((int)OBD2::emulateDash, 100000);
 
-
     Serial.print("Initalizing data manager...");
     dataManager.init();
     Serial.println("OK!");
 
-    Serial.print("Initalizing adc...");
+    // Serial.print("Initalizing adc...");
     // adc.init(0x34);
-    Serial.println("NOPE!");
-
+    // Serial.println("NOPE!");
 
     /**--------------------------------------------
      *               Init sensors
@@ -167,7 +161,7 @@ void setup()
     SuspensionFrontLeft.init();
     SuspensionRearRight.init();
     SuspensionRearLeft.init();
-    axis6.begin();
+    bnoGyro.begin();
 
     /**--------------------------------------------
      *               Initi data logger
@@ -183,17 +177,17 @@ void setup()
     dataManager.addSensor(&Gear);
 
     /**----------------------
-     *    GYRO sensors
+     *    GYRO sensors (Now we use BNO08x family model)
     ------------------------*/
-    dataManager.addSensor(&GyroAccelX);
-    dataManager.addSensor(&GyroAccelY);
-    dataManager.addSensor(&GyroAccelZ);
-    dataManager.addSensor(&GyroYaw);
-    dataManager.addSensor(&GyroPitch);
-    dataManager.addSensor(&GyroRoll);
-    dataManager.addSensor(&GyroMagX);
-    dataManager.addSensor(&GyroMagY);
-    dataManager.addSensor(&GyroMagZ);
+    dataManager.addSensor(&BNOAccelX);
+    dataManager.addSensor(&BNOAccelY);
+    dataManager.addSensor(&BNOAccelZ);
+    dataManager.addSensor(&BNOYaw);
+    dataManager.addSensor(&BNOPitch);
+    dataManager.addSensor(&BNORoll);
+    dataManager.addSensor(&BNOGyroX);
+    dataManager.addSensor(&BNOGyroY);
+    dataManager.addSensor(&BNOGyroZ);
 
     // OBD2 sensors data manager
     dataManager.addSensor(&ODBRpm);
@@ -236,11 +230,6 @@ void setup()
     delay(1000);
 
     /**--------------------------------------------
-     *               Init Gravitational sensor
-     *---------------------------------------------**/
-    // axis6.begin();
-
-    /**--------------------------------------------
      *               Init buttons
      *---------------------------------------------**/
     pinMode(GREEN_BUTTON, INPUT_PULLUP);
@@ -251,15 +240,15 @@ void setup()
 
 void loop()
 {
+
     // while (true)
     // {
     //     Serial.println("A");
     //     delay(100);
     // }
-    
 
     OBD2::OBD2events();
-    axis6.loop();
+    bnoGyro.loop();
     // Serial.print(axis6.getYaw());
     // Serial.print(" | ");
     // Serial.print(axis6.getPitch());
