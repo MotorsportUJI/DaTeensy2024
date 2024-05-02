@@ -42,7 +42,7 @@ Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, SUSPENS
 Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, SUSPENSION_REAR_RIGHT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_r_r", true);
 Sensor SuspensionRearLeft("Suspension trasera izquierda", SUSPENSION, SUSPENSION_REAR_LEFT_PIN, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "sus_r_l", true);
 
-Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
+// Sensor Firewall("Firewall", TEMPERATURE, max6675.readTemperature(), "ºC", "firewall", true);
 /**----------------------
  *    ENCAPSULATED GYRO SENSOR FUNCTIONS
 ------------------------*/
@@ -108,6 +108,9 @@ Sensor ODBSpeed("Velocidad", VALUE, OBD2::getSpeed, "km/h", false, false, "speed
 
 // Controlador de datos
 Data dataManager(100, TelemetryUART, &display);
+
+float getMillis(){return (float) dataManager.getMillis();}
+Sensor Timestamp("Timestamp", VALUE, getMillis, "ms", false, true, "timestamp", true);
 
 // Dash info
 uint32_t time_engine_on = 0;
@@ -205,6 +208,10 @@ void setup()
     dataManager.addSensor(&ODBSpeed);
     dataManager.addSensor(&ODBAbsPressure);
     dataManager.addSensor(&ODBDTCCount);
+
+    dataManager.addSensor(&Timestamp);
+
+    dataManager.saveHeaders();
 
     /**--------------------------------------------
      *               Init OBD2

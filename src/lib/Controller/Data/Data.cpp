@@ -139,6 +139,7 @@ void Data::loop()
         for (int i = 0; i < numSensors; i++)
         {
             display->sendSensorData(*sensors[i]);
+
             if (debug)
             {
                 Serial.print((String) "[" + i + "]" + sensors[i]->getName() + "\t");
@@ -156,4 +157,29 @@ void Data::loop()
         }
         previousMillis = currentMillis;
     }
+}
+
+
+void Data::saveHeaders()
+{
+    String headers = "";
+    for (int i = 0; i < numSensors; i++)
+    {
+        if (sensors[i]->sendTelemetry != true)
+        {
+            continue;
+        }
+        headers += sensors[i]->getName();
+        if (i < numSensors - 1)
+        {
+            headers += ", ";
+        }
+    }
+    sdstore.saveLine(headers);
+}
+
+
+unsigned long Data::getMillis()
+{
+    return millis();
 }

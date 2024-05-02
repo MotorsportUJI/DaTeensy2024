@@ -33,6 +33,12 @@ public:
     // Get converted with extension
     String getFull();
 
+    // Save  headers of data in the sd
+    void saveHeaders();
+
+    // get millis
+    unsigned long getMillis();
+    
     // Do something in iteration
     void loop();
 
