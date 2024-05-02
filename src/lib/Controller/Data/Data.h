@@ -37,7 +37,7 @@ public:
     void loop();
 
     boolean debug = false;
-    boolean debugTelemetry = false;
+    boolean debugTelemetry = true;
 
 private:
     TELEMETRY telemetry;

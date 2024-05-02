@@ -52,9 +52,9 @@ float getaz() { return bnoGyro.getAccelZ(); }
 float getYaw() { return bnoGyro.getYaw(); }
 float getPitch() { return bnoGyro.getPitch(); }
 float getRoll() { return bnoGyro.getRoll(); }
-float getGyroX() { return bnoGyro.getGyroX(); }
-float getGyroY() { return bnoGyro.getGyroY(); }
-float getGyroZ() { return bnoGyro.getGyroZ(); }
+// float getGyroX() { return bnoGyro.getGyroX(); }
+// float getGyroY() { return bnoGyro.getGyroY(); }
+// float getGyroZ() { return bnoGyro.getGyroZ(); }
 
 Sensor BNOAccelX("Gyro AccelX", VALUE, getax, "m/s2", true, true, "accel_x", true);
 Sensor BNOAccelY("Gyro AccelY", VALUE, getay, "m/s2", true, true, "accel_y", true);
@@ -62,9 +62,9 @@ Sensor BNOAccelZ("Gyro AccelZ", VALUE, getaz, "m/s2", true, true, "accel_z", tru
 Sensor BNOYaw("Gyro Yaw", VALUE, getYaw, "º", true, true, "gyro_yaw", true);
 Sensor BNOPitch("Gyro Pitch", VALUE, getPitch, "º", true, true, "gyro_pitch", true);
 Sensor BNORoll("Gyro Roll", VALUE, getRoll, "º", true, true, "gyro_roll", true);
-Sensor BNOGyroX("Gyro X", VALUE, getGyroX, "rad/s", true, true, "gyro_angle_x", true);
-Sensor BNOGyroY("Gyro Y", VALUE, getGyroY, "rad/s", true, true, "gyro_angle_y", true);
-Sensor BNOGyroZ("Gyro Z", VALUE, getGyroZ, "rad/s", true, true, "gyro_angle_z", true);
+// Sensor BNOGyroX("Gyro X", VALUE, getGyroX, "rad/s", true, true, "gyro_angle_x", true);
+// Sensor BNOGyroY("Gyro Y", VALUE, getGyroY, "rad/s", true, true, "gyro_angle_y", true);
+// Sensor BNOGyroZ("Gyro Z", VALUE, getGyroZ, "rad/s", true, true, "gyro_angle_z", true);
 
 /**----------------------
  *    ADC Sensors
@@ -185,9 +185,9 @@ void setup()
     dataManager.addSensor(&BNOYaw);
     dataManager.addSensor(&BNOPitch);
     dataManager.addSensor(&BNORoll);
-    dataManager.addSensor(&BNOGyroX);
-    dataManager.addSensor(&BNOGyroY);
-    dataManager.addSensor(&BNOGyroZ);
+    // dataManager.addSensor(&BNOGyroX);
+    // dataManager.addSensor(&BNOGyroY);
+    // dataManager.addSensor(&BNOGyroZ);
 
     // OBD2 sensors data manager
     dataManager.addSensor(&ODBRpm);
