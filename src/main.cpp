@@ -144,8 +144,8 @@ void setup()
     Serial.begin(115200);
     Serial.println("Starting...");
 
-    EmulateDashTimer.priority(255);
-    EmulateDashTimer.begin((int)OBD2::emulateDash, 100000);
+    // EmulateDashTimer.priority(255);
+    // EmulateDashTimer.begin((int)OBD2::emulateDash, 100000);
 
     Serial.print("Initalizing data manager...");
     dataManager.init();
