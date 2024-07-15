@@ -11,7 +11,7 @@
 class Display
 {
 public:
-    Display(HardwareSerial &_serial); // Constructor
+    Display(HardwareSerialIMXRT &_serial); // Constructor
 
     void init();
     void rpmled(int nleds);
@@ -34,5 +34,5 @@ public:
 
 private:
     int ledCount; // Número de LEDs (variable privada)
-    HardwareSerial *serialScreen;
+    HardwareSerialIMXRT *serialScreen;
 };

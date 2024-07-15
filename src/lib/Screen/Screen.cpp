@@ -1,7 +1,6 @@
 #include "Screen.h"
-HardwareSerial *ser;
 
-Display::Display(HardwareSerial &_serial)
+Display::Display(HardwareSerialIMXRT &_serial)
 {
     this->serialScreen = &_serial;
 }
