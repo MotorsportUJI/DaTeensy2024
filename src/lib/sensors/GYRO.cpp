@@ -4,15 +4,20 @@
 GYRO::GYRO()
 {
 }
+GYRO::GYRO(TCA9548A* tca) {
+    _tca = tca;
+}
 BNO08x myIMU;
 
 void GYRO::begin() // Give I2C address and start sensorv 0x68, config
 {
     Wire.begin();
+    _tca->pcaselect(TCA_PORT);
 
     // if (myIMU.begin() == false){
     // Setup without INT/RST control (Not Recommended)
-    if (myIMU.begin(BNO08X_ADDR, Wire, BNO08X_INT, BNO08X_RST) == false)
+    // Using tca address
+    if (myIMU.begin(_tca->getAddress(), Wire, BNO08X_INT, BNO08X_RST) == false)
     {
 #ifdef GYRO_H_DEBUG
         Serial.println("BNO08x: BNO08x not detected at default I2C address. Check your jumpers on the hookup guide. Freezing...");
@@ -28,10 +33,13 @@ void GYRO::begin() // Give I2C address and start sensorv 0x68, config
     }
     setReports();
     calibrate();
+    Wire.end();
 }
 
 void GYRO::loop() // Get values from gyroscope
 {
+    Wire.begin();
+    _tca->pcaselect(TCA_PORT);
     bool updated = false;
 
     // if last update was over 500 ms, reset
@@ -82,6 +90,7 @@ void GYRO::loop() // Get values from gyroscope
         printDataDebug();
 #endif
     }
+    Wire.end();
 }
 
 void GYRO::calibrate()

@@ -4,6 +4,8 @@
 #ifndef GYRO_H
 #define GYRO_H
 
+#include "lib/Controller/I2CMux/TCA9548A.h"
+
 /**-------------------------
  * FOR DEBUGGING PURPOSES :)
  * -------------------------
@@ -24,6 +26,9 @@
 #define BNO08X_ADDR 0x4B // SparkFun BNO08x Breakout (Qwiic) defaults to 0x4B (we use 0x68)
 // #define BNO08X_ADDR 0x4A // Alternate address if ADR jumper is closed
 
+// I2C multiplexor port
+#define TCA_PORT 7
+
 struct GYROData
 {
     float yaw;
@@ -41,6 +46,7 @@ class GYRO
 {
 public:
     GYRO();
+    GYRO(TCA9548A *tca);
 
     void begin();
     void loop();
@@ -65,6 +71,7 @@ public:
     void printDataDebug();
 
 private:
+    TCA9548A* _tca;
     GYROData data;
     uint32_t lastUpdate = 0;
     void setReports(void);
