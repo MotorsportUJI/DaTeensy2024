@@ -40,6 +40,9 @@
 #define SCK_PIN 6 // Replace with the appropriate pin numbers
 #define CS_PIN 7
 #define SO_PIN 8
+#define FIREWALL_CS_PIN 10
+#define RADIADOR_CS_PIN 36
+#define ACEITE_CS_PIN 37
 
 // suspension sensors pins
 #define SUSPENSION_FRONT_LEFT_PIN A0
@@ -65,5 +68,20 @@
 #define OIL_PRESSURE_MAX 1023
 #define OIL_PRESSURE_MIN_BAR 0
 #define OIL_PRESSURE_MAX_BAR 10
+
+// TODO Admission
+
+#define MIN_ADMISSION 0
+#define MAX_ADMISSION 100
+
+#define MIN_ADMISSION_BAR 0
+#define MAX_ADMISSION_BAR 100
+
+// TODO Calderin
+
+#define MIN_CALDERIN 0
+#define MAX_CALDERIN 100
+#define MIN_CALDERIN_BAR 0
+#define MAX_CALDERIN_BAR 100
 
 #endif
