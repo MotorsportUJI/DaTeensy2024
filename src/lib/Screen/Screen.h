@@ -11,6 +11,7 @@
 class Display
 {
 public:
+    Display();
     Display(HardwareSerialIMXRT &_serial); // Constructor
 
     void init();
