@@ -10,12 +10,18 @@
 #define CAN CAN3
 #define DEBUG
 
+#define PI 3.1415926535897932384626433832795
+
+
 // reading 1 from this pin means that the cable is connected to GND, reading 0 means that is disconnected
 
 #define DEBUG_LED 12
 
-#define GREEN_BUTTON 40 // clear dtc
-#define RED_BUTTON 41   // switch screen view
+// Buttons
+#define B1 15   // change screen
+#define B2 14   // cambiar efecto leds
+#define B3 41   // cambiar mde donde viene los datos (TPS. RPM, etc)
+#define B4 40   
 
 // GY-6500 or GY-9250 sensor addresses and registers
 #define BUS = smbus.SMBus(1)
@@ -24,6 +30,8 @@
 #define PWR_MGMT_1 0x6B
 #define ACCEL_XOUT_H 0x3B
 #define GYRO_XOUT_H 0x43
+
+
 
 // Sensor configuration
 // #define ACCEL_CONFIG 0x08 // Set accelerometer range to +/- 4g
@@ -83,5 +91,13 @@
 #define MAX_CALDERIN 100
 #define MIN_CALDERIN_BAR 0
 #define MAX_CALDERIN_BAR 100
+
+// Relé
+
+#define RELAY_PIN 2
+
+// Hall
+
+#define HALL_PIN 9
 
 #endif
