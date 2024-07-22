@@ -25,6 +25,14 @@
 //SPI MUX
 #include "lib/Controller/SPIMux/SPIMux.h"
 
+// Leds
+#include "lib/Controller/LED/LED.h"
+
+// Buttons
+#include "lib/Controller/Button/BUTTON.h"
+
+// Velocidad
+#include "lib/sensors/Velocidad.h"
 
 /**----------------------
  *    OBD
@@ -126,7 +134,6 @@ Sensor CaudalAire("CaudalAire", VALUE, readADC12, "V", false, false, "airflow", 
 Sensor libre1("libre1", VALUE, readADC13, "V", false, false, "libre1", true);
 Sensor libre2("libre2", VALUE, readADC14, "V", false, false, "libre2", true);
 Sensor libre3("libre3", VALUE, readADC15, "V", false, false, "libre3", true);
-Sensor PresionFreno("PresionFreno", VALUE, readADC16, "V", false, false, "brake_p", true);
 Sensor SuspensionFrontRight("Suspension delantera derecha", SUSPENSION, readADC17, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_f_r", true);
 Sensor SuspensionFrontLeft("Suspension delantera izquierda", SUSPENSION, readADC18, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_f_l", true);
 Sensor SuspensionRearRight("Suspension trasera derecha", SUSPENSION, readADC19, MIN_SUSPENSION, MAX_SUSPENSION, MIN_SUSPENSION_MM, MAX_SUSPENSION_MM, "mm", false, false, "susp_r_r", true);
@@ -148,29 +155,26 @@ float readADC24 (){ return adc2.readADC4(); }
 Sensor PAireAdmision2FPB("Presion de aire de admision", MAPPING, readADC20, MIN_ADMISSION, MAX_ADMISSION, MIN_ADMISSION_BAR, MAX_ADMISSION_BAR, "bar", false, false, "adm_p", true);
 Sensor PCalderinFPB("Presion del calderin", MAPPING, readADC21, MIN_CALDERIN, MAX_CALDERIN, MIN_CALDERIN_BAR, MAX_CALDERIN_BAR, "bar", false, false, "calder_p", true);
 Sensor OilPressure("Presion aceite", MAPPING, readADC22, OIL_PRESSURE_MIN, OIL_PRESSURE_MAX, OIL_PRESSURE_MIN_BAR, OIL_PRESSURE_MAX_BAR, "bar", false, false, "oil_p", true);
-// TODO Sensores FPB
 
 
 /**----------------------
  *    Gear 
  *------------------------**/
 Sensor Gear("Gear", VALUE, GEAR::getGear, "gear", false, true, "gear", true);
-
-
+Sensor PresionFreno("PresionFreno", VALUE, readADC16, "V", false, false, "brake_p", true);
 
 
 /**----------------------
  *    Freno
  *------------------------**/
-Sensor BrakePreassure("PresionFreno", VALUE, OBD2::getIntakeManifoldAbsPressure, "kPa", false, true, "presIntake", true);
 
 /**----------------------
  *    Hall (Velocidad)
  *------------------------**/
-Sensor HallSpeedLeft("VelocidadIzq", VALUE, OBD2::getSpeed, "km/h", false, true, "speed", true);
-Sensor HallSpeedRight("VelocidadDer", VALUE, OBD2::getSpeed, "km/h", false, true, "speed", true);
+VELOCIDAD velocidad;
 
-
+float getAvgSpeed() { return velocidad.getSpeed() ;}
+Sensor AvgSpeed("Velocidad media", VALUE, getAvgSpeed, "Km/h", false, true, "speed", true);
 
 /**----------------------
  *    ODB Sensors
@@ -196,7 +200,7 @@ Sensor ODB02Volt("Voltaje O2", VALUE, OBD2::getOxygenSensorVoltage, "V", true, f
 
 Sensor ODBTimingAdvance("Avance", VALUE, OBD2::getTimingAdvance, "º", false, false, "Tadv", true);
 
-// TODO Donde van?
+// TODO Donde van
 /**---------------------- 
  *    Sensor direccion
  *------------------------**/
@@ -204,12 +208,85 @@ Sensor SteeringAngle("AnguloDireccion", VALUE, OBD2::getSpeed, "km/h", false, tr
 
 
 
-// Display object
+// LED
+LED led;
+int ledEffect = 0;
+int valueReadIndex = 0;
+int (*ledValue)();
+
+/**----------------------
+ *    Display
+ *------------------------**/
 Display display(ScreenUART);
 int CURRENT_SCREEN = 0;
 
+/**----------------------
+ *    Botones
+ *------------------------**/
+BUTTON BotonCambioPantalla(B1, []() {
+    if (CURRENT_SCREEN == 0)
+    {
+        OBD2::readDTC();
+        display.setSplashScreen();
+        CURRENT_SCREEN = 1;
+    }
+    else if (CURRENT_SCREEN == 1)
+    {
+        display.setSensorScreen();
+        CURRENT_SCREEN = 2;
+    }
+    else if (CURRENT_SCREEN == 2)
+    {
+        display.setMainScreen();
+        CURRENT_SCREEN = 3;
+    }
+    else if (CURRENT_SCREEN == 3)
+    {
+        display.setDebugScreen();
+        CURRENT_SCREEN = 0;
+    }
+    Serial.println("Pantalla: " + String(CURRENT_SCREEN));
+}, 1000);
+
+BUTTON CambiarEfectoLed(B2, []() {
+    if(ledEffect == 0){
+        led.rainbow();
+        ledEffect = 1;
+    }else if(ledEffect == 1){
+        led.rainbowWithGlitter();
+        ledEffect = 2;
+    // }else if(ledEffect == 2){
+    //     led.confetti();
+    //     ledEffect = 3;
+    }else if(ledEffect == 2){
+        led.sinelon();
+        ledEffect = 3;
+    }else if(ledEffect == 3){
+        led.set_line((uint8_t *) 0xFF8001, (uint8_t *)0x21BBFD, ledValue);
+        ledEffect = 4;
+    }else{
+        led.set_line((uint8_t *)0x076B00, (uint8_t *)0xC60404, ledValue);
+        ledEffect = 0;
+    }
+
+}, 1000);
+
+int readRPMLed(){return map(OBD2::getRPM(), 0, 12000, 0, NUM_LEDS);}
+int readTPSLed(){return map(OBD2::getObdTPS(), 0, 100, 0, NUM_LEDS);}
 
 
+BUTTON CambiarEntradaLed(B3, []() {
+    if(valueReadIndex == 0){
+        
+        ledValue = &readRPMLed;
+        valueReadIndex = 1;
+    }
+}, 1000);
+
+
+BUTTON Unused(B4, []() {
+    // print("Unused button");
+}, 1000);
 
 
 
@@ -237,6 +314,8 @@ boolean previous_fss = false;
 
 IntervalTimer EmulateDashTimer;
 
+
+
 void setup()
 {
     /**----------------------------------------------
@@ -245,6 +324,7 @@ void setup()
      *   - Estas haciendo los inits de wire, serial, i2c... en el setup?
      *   - Estas haciendo los inits de los sensores en el setup?
      *   - Hay algun pin digital o analogico iniciandose fuera del setup?
+     *   - Si no va es por culpa de gyro. qiutarlo del begin y del loop
      *---------------------------------------------**/
 
     // init serial
@@ -259,6 +339,17 @@ void setup()
     Serial.println("OK!");
 
 
+    /**----------------------
+     *    PIN DEL RELÉ DE LA LUZ DE FRENO
+     *------------------------**/
+
+    pinMode(RELAY_PIN, OUTPUT);
+
+    /**----------------------
+     *    VELOCIDAD (HALL)
+     *------------------------**/
+
+    velocidad.loop();
 
     // Serial.print("Initalizing adc...");
     // adc.init(0x34);
@@ -268,6 +359,12 @@ void setup()
      *               Init sensors
      *---------------------------------------------**/
     bnoGyro.begin();
+    
+    /**----------------------
+     *    Hall
+     *------------------------**/
+    velocidad.addHall(6);
+    velocidad.addHall(9);
 
     /**--------------------------------------------
      *               Initi data logger
@@ -350,9 +447,15 @@ void setup()
     /**--------------------------------------------
      *               Init buttons
      *---------------------------------------------**/
-    pinMode(GREEN_BUTTON, INPUT_PULLUP);
-    pinMode(RED_BUTTON, INPUT_PULLUP);
+    BotonCambioPantalla.init();
+    CambiarEfectoLed.init();
+    CambiarEntradaLed.init();
+    Unused.init();
 
+    /**----------------------
+     *    LED
+     *------------------------**/
+    led.init();
     display.setSensorScreen();
 }
 
@@ -366,7 +469,17 @@ void loop()
     // }
 
     OBD2::OBD2events();
+
+    /**----------------------
+     *    GYRO
+     *------------------------**/
     bnoGyro.loop(); 
+
+    /**----------------------
+     *    Velocidad
+     *------------------------**/
+    velocidad.loop();
+
     // Serial.print(axis6.getYaw());
     // Serial.print(" | ");
     // Serial.print(axis6.getPitch());
@@ -380,87 +493,31 @@ void loop()
     // Serial.println(axis6.getAccelZ());
 
     /**----------------------
-     *    check buttons  long or short press
+     *    Button update
      *------------------------**/
-    // green short press
-    if (digitalRead(GREEN_BUTTON) == LOW && previous_contact == false)
-    {
-        green_button_ms = millis();
-        previous_contact = true;
-    }
-    else if (digitalRead(GREEN_BUTTON) == HIGH && previous_contact == true)
-    {
-        if (millis() - green_button_ms < 1000)
-        {
-            Serial.println("GREEN BUTTON");
-            // change gear to be send
-            uint8_t actual = GEAR::getDesiredGear();
-            if (actual == 128)
-            {
-                actual = 0;
-            }
-            else if (actual == 255)
-            {
-                actual = 128;
-            }
-            else if (actual == 6)
-            {
-                actual = 255;
-            }
-            else
-            {
-                actual++;
-            }
-            GEAR::setDesiredGear(actual);
-        }
-        else
-        {
-            // green_button.longPress();
-        }
-        previous_contact = false;
-    }
-    if (digitalRead(RED_BUTTON) == LOW && previous_fss == false)
-    {
-        red_button_ms = millis();
-        previous_fss = true;
-    }
-    else if (digitalRead(RED_BUTTON) == HIGH && previous_fss == true)
-    {
-        if (millis() - red_button_ms < 1000)
-        {
-            Serial.println("RED BUTTON");
-            if (CURRENT_SCREEN == 0)
-            {
+    BotonCambioPantalla.update();
+    CambiarEfectoLed.update();
+    CambiarEntradaLed.update();
+    Unused.update();
 
-                OBD2::readDTC();
-                display.setSplashScreen();
-                CURRENT_SCREEN = 1;
-            }
-            else if (CURRENT_SCREEN == 1)
-            {
-                display.setSensorScreen();
-                CURRENT_SCREEN = 2;
-            }
-            else if (CURRENT_SCREEN == 2)
-            {
-                display.setMainScreen();
-                CURRENT_SCREEN = 3;
-            }
-            else if (CURRENT_SCREEN == 3)
-            {
-                display.setDebugScreen();
-                CURRENT_SCREEN = 0;
-            }
-            Serial.println("Pantalla: " + String(CURRENT_SCREEN));
-        }
-        else
-        {
-            OBD2::clearDTC();
-            display.setMainScreen();
-        }
-        previous_fss = false;
+    /**----------------------
+     *    LED
+     *------------------------**/
+    led.loop();
+
+    /**----------------------
+     *    FRENO (Si se presiona el freno, activar relé conectado al pin 2)
+     *------------------------**/
+
+    if (PresionFreno.read() > 0) {
+        digitalWrite(RELAY_PIN, HIGH);
+    } else {
+        digitalWrite(RELAY_PIN, LOW);
     }
 
+    /**--------------------------------------------
+     *               NO TOCAR
+     *---------------------------------------------**/
     // execute each 100ms
     if (millis() - elapsed_100ms > 100)
     {
@@ -475,10 +532,12 @@ void loop()
             OBD2::emulateDash(GEAR::getGear());
         }
 
-        // updateScreen
+        /**--------------------------------------------
+         *               EL LOOP
+         *---------------------------------------------**/
         display.sendTimeEngineOn(time_engine_on);
         // print data to sd and update screen
-        dataManager.loop();
+        // dataManager.loop();
         elapsed_100ms = millis();
     }
 
