@@ -343,7 +343,7 @@ void setup()
      *    PIN DEL RELÉ DE LA LUZ DE FRENO
      *------------------------**/
 
-    pinMode(RELAY_PIN, OUTPUT);
+    pinMode(PIN_RELE_FRENO, OUTPUT);
 
     /**----------------------
      *    VELOCIDAD (HALL)
@@ -358,7 +358,7 @@ void setup()
     /**--------------------------------------------
      *               Init sensors
      *---------------------------------------------**/
-    bnoGyro.begin();
+    // bnoGyro.begin();
     
     /**----------------------
      *    Hall
@@ -382,12 +382,12 @@ void setup()
     /**----------------------
      *    GYRO sensors (Now we use BNO08x family model)
     ------------------------*/
-    dataManager.addSensor(&BNOAccelX);
-    dataManager.addSensor(&BNOAccelY);
-    dataManager.addSensor(&BNOAccelZ);
-    dataManager.addSensor(&BNOYaw);
-    dataManager.addSensor(&BNOPitch);
-    dataManager.addSensor(&BNORoll);
+    // dataManager.addSensor(&BNOAccelX);
+    // dataManager.addSensor(&BNOAccelY);
+    // dataManager.addSensor(&BNOAccelZ);
+    // dataManager.addSensor(&BNOYaw);
+    // dataManager.addSensor(&BNOPitch);
+    // dataManager.addSensor(&BNORoll);
     // dataManager.addSensor(&BNOGyroX);
     // dataManager.addSensor(&BNOGyroY);
     // dataManager.addSensor(&BNOGyroZ);
@@ -473,7 +473,7 @@ void loop()
     /**----------------------
      *    GYRO
      *------------------------**/
-    bnoGyro.loop(); 
+    // bnoGyro.loop(); 
 
     /**----------------------
      *    Velocidad
@@ -509,7 +509,7 @@ void loop()
      *    FRENO (Si se presiona el freno, activar relé conectado al pin 2)
      *------------------------**/
 
-    if (PresionFreno.read() > 0) {
+    if (PresionFreno.read() > FRENO_LUZ_TRESHOLD) {
         digitalWrite(RELAY_PIN, HIGH);
     } else {
         digitalWrite(RELAY_PIN, LOW);

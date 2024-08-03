@@ -13,6 +13,7 @@
 #define PI 3.1415926535897932384626433832795
 
 
+
 // reading 1 from this pin means that the cable is connected to GND, reading 0 means that is disconnected
 
 #define DEBUG_LED 12
@@ -94,7 +95,8 @@
 
 // Relé
 
-#define RELAY_PIN 2
+#define PIN_RELE_FRENO 2
+#define FRENO_LUZ_TRESHOLD 25 
 
 // Hall
 
