@@ -422,6 +422,12 @@ void setup()
     
 
     /**--------------------------------------------
+     *               MUX
+     *---------------------------------------------**/
+    mux.init(MUX_S0, MUX_S1, MUX_S2, MUX_S3, MUX_READ_PIN);
+
+
+    /**--------------------------------------------
      *               Init OBD2
      *---------------------------------------------**/
     initOBD2(OBD2db);
@@ -510,9 +516,9 @@ void loop()
      *------------------------**/
 
     if (PresionFreno.read() > FRENO_LUZ_TRESHOLD) {
-        digitalWrite(RELAY_PIN, HIGH);
+        digitalWrite(PIN_RELE_FRENO, HIGH);
     } else {
-        digitalWrite(RELAY_PIN, LOW);
+        digitalWrite(PIN_RELE_FRENO, LOW);
     }
 
     /**--------------------------------------------

@@ -10,7 +10,7 @@
 #define CAN CAN3
 #define DEBUG
 
-#define PI 3.1415926535897932384626433832795
+#define PI 3.14159
 
 
 
@@ -101,5 +101,13 @@
 // Hall
 
 #define HALL_PIN 9
+
+
+// MUX
+#define MUX_S0 39
+#define MUX_S1 38
+#define MUX_S2 33
+#define MUX_S3 3
+#define MUX_READ_PIN 4
 
 #endif

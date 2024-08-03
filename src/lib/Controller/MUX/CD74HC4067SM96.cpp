@@ -1,21 +1,15 @@
 #include "CD74HC4067SM96.h"
 
 
-CD74HC4067SM96::CD74HC4067SM96(){
-    _readPin = 0;
-}
-
-void CD74HC4067SM96::init(int readPin, int pinS0, int pinS1, int pinS2, int pinS3){
-    CD74HC4067 mux(pinS0, pinS1, pinS2, pinS3);
+void CD74HC4067SM96::init(int readPin, int pinS0, int pinS1, int pinS2, int pinS3) {
     _readPin = readPin;
-    _mux = mux;
+    _mux = new CD74HC4067(pinS0, pinS1, pinS2, pinS3);  // Dynamically allocate the object
 
     pinMode(_readPin, INPUT);
-
 }
 
 int CD74HC4067SM96::readPin(int pin){
-    _mux.channel(pin);
+    _mux->channel(pin);
     return digitalRead(_readPin);
 }
 
